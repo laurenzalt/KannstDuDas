@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">KannstDuDas</string>
+    <string name="sign_in_title">Sign in</string>
+    <string name="sign_in_button">Log in</string>
+    <string name="sign_up_link">Sign up</string>
+    <string name="forgot_password_link">Forgot password?</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="sign_up_title">Sign up</string>
+    <string name="username_hint">Username</string>
+    <string name="sign_up_button">Sign up!</string>
+    <string name="sign_in_link">Sign in</string>
 </resources>

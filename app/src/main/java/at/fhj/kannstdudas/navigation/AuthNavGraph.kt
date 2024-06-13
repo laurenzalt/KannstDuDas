@@ -18,8 +18,8 @@ fun AuthNavGraph(
     navController: NavHostController,
     startDestination: Screen = Screen.SignIn) {
     NavHost(navController, startDestination) {
-        composable<Screen.SignIn>{ SignInScreen() }
-        composable<Screen.SignUp> { SignUpScreen() }
+        composable<Screen.SignIn>{ SignInScreen(navController) }
+        composable<Screen.SignUp> { SignUpScreen(navController) }
         composable<Screen.ForgotPassword> { ForgotPasswordScreen() }
     }
 }
