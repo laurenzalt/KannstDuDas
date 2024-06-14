@@ -23,4 +23,6 @@ sealed class Screen(val id: String) {
     data object  SignUp: Screen("Sign up")
     @Serializable
     data object  ForgotPassword: Screen("Forgot Password")
+    @Serializable
+    data object SkillDetail: Screen("Skill Detail")
 }

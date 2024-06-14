@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import at.fhj.kannstdudas.model.Skill
 import at.fhj.kannstdudas.presentation.screen.ExploreScreen
 import at.fhj.kannstdudas.presentation.screen.ForgotPasswordScreen
 import at.fhj.kannstdudas.presentation.screen.MySkillsScreen
@@ -23,6 +24,7 @@ import at.fhj.kannstdudas.presentation.screen.NewSkillScreen
 import at.fhj.kannstdudas.presentation.screen.ProfileScreen
 import at.fhj.kannstdudas.presentation.screen.SignInScreen
 import at.fhj.kannstdudas.presentation.screen.SignUpScreen
+import at.fhj.kannstdudas.presentation.screen.SkillDetailScreen
 import at.fhj.kannstdudas.presentation.shared.navbar.NavBar
 import at.fhj.kannstdudas.presentation.shared.topbar.TopBar
 
@@ -30,6 +32,7 @@ import at.fhj.kannstdudas.presentation.shared.topbar.TopBar
  * at.fhj.kannstdudas.navigation
  * Created by Noah Dimmer on 12/06/2024
  */
+
 
 @Composable
 fun MainNavGraph(
@@ -45,10 +48,11 @@ fun MainNavGraph(
             startDestination = startDestination,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable<Screen.Explore> { ExploreScreen() }
-            composable<Screen.NewSkill> { NewSkillScreen() }
+            composable<Screen.Explore> { ExploreScreen(navController) }
+            composable<Screen.NewSkill> { NewSkillScreen(navController) }
             composable<Screen.MySkills> { MySkillsScreen() }
             composable<Screen.Profile> { ProfileScreen() }
+            composable<Screen.SkillDetail> { SkillDetailScreen() }
         }
     }
 }
