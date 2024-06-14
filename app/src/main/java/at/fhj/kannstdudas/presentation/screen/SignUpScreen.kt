@@ -46,6 +46,7 @@ fun SignUpScreen(
     var email by rememberSaveable { mutableStateOf("") }
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    //TODO: Needs proper user error messages
     val errorMessage by viewModel.errorMessage.collectAsState()
 
     Column(

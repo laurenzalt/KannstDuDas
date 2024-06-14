@@ -34,7 +34,7 @@ fun NavBar(navController: NavHostController) {
                 onClick = {
                     selectedItem = index
                     navController.navigate(item.screen) },
-                label = { Text(item.screen.id) },
+                label = { Text(item.screen.label) },
                 icon = { Icon(imageVector = item.icon, contentDescription = null) }
             )
         }

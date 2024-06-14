@@ -1,9 +1,9 @@
 package at.fhj.kannstdudas.navigation
 
-import androidx.compose.runtime.Composable
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navigation
 import at.fhj.kannstdudas.presentation.screen.ForgotPasswordScreen
 import at.fhj.kannstdudas.presentation.screen.SignInScreen
 import at.fhj.kannstdudas.presentation.screen.SignUpScreen
@@ -13,13 +13,14 @@ import at.fhj.kannstdudas.presentation.screen.SignUpScreen
  * Created by Noah Dimmer on 12/06/2024
  */
 
-@Composable
-fun AuthNavGraph(
-    navController: NavHostController,
-    startDestination: Screen = Screen.SignIn) {
-    NavHost(navController, startDestination) {
-        composable<Screen.SignIn>{ SignInScreen(navController) }
-        composable<Screen.SignUp> { SignUpScreen(navController) }
+fun NavGraphBuilder.authNavGraph(
+    navController: NavHostController
+) {
+    navigation<Screen.AuthNav>(
+        startDestination = Screen.SignIn,
+    ) {
+        composable<Screen.SignIn> { SignInScreen(navController = navController) }
+        composable<Screen.SignUp> { SignUpScreen(navController = navController) }
         composable<Screen.ForgotPassword> { ForgotPasswordScreen() }
     }
 }

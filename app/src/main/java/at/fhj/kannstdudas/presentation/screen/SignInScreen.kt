@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -47,8 +48,17 @@ fun SignInScreen(
 
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
-    //TODO: This needs proper user error messages
+    val isSignIn by viewModel.isSignedIn.collectAsState()
+    //TODO: Needs proper user error messages
     val errorMessage by viewModel.errorMessage.collectAsState()
+
+    LaunchedEffect(isSignIn) {
+        if (isSignIn) {
+            navController.navigate(Screen.HomeNav) {
+                popUpTo<Screen.HomeNav> { inclusive = true }
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.email.collectLatest {
@@ -105,6 +115,7 @@ fun SignInScreen(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
             ),
+            visualTransformation = PasswordVisualTransformation(),
             keyboardActions = KeyboardActions(
                 onDone = {
                     keyboardController?.hide()
