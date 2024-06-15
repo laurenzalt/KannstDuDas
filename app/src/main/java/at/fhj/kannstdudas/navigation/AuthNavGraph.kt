@@ -4,9 +4,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import at.fhj.kannstdudas.presentation.screen.ForgotPasswordScreen
-import at.fhj.kannstdudas.presentation.screen.SignInScreen
-import at.fhj.kannstdudas.presentation.screen.SignUpScreen
+import at.fhj.kannstdudas.presentation.screen.authentication.ForgotPasswordScreen
+import at.fhj.kannstdudas.presentation.screen.authentication.SignInScreen
+import at.fhj.kannstdudas.presentation.screen.authentication.SignUpScreen
 
 /**
  * at.fhj.kannstdudas.navigation
@@ -19,8 +19,8 @@ fun NavGraphBuilder.authNavGraph(
     navigation<Screen.AuthNav>(
         startDestination = Screen.SignIn,
     ) {
-        composable<Screen.SignIn> { SignInScreen(navController = navController) }
-        composable<Screen.SignUp> { SignUpScreen(navController = navController) }
-        composable<Screen.ForgotPassword> { ForgotPasswordScreen() }
+        composable<Screen.SignIn> { SignInScreen(navController) }
+        composable<Screen.SignUp> { SignUpScreen(navController) }
+        composable<Screen.ForgotPassword> { ForgotPasswordScreen(navController) }
     }
 }

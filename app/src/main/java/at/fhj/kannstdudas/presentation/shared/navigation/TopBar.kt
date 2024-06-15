@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package at.fhj.kannstdudas.presentation.shared.topbar
+package at.fhj.kannstdudas.presentation.shared.navigation
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

@@ -1,4 +1,4 @@
-package at.fhj.kannstdudas.presentation.screen
+package at.fhj.kannstdudas.presentation.screen.authentication
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,12 +7,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,12 +30,15 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import at.fhj.kannstdudas.R
 import at.fhj.kannstdudas.navigation.Screen
-import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 /**
  * at.fhj.kannstdudas.presentation.screen
@@ -37,17 +46,35 @@ import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
  */
 
 @Composable
-fun SignUpScreen(
+fun SignInScreen(
     navController: NavController,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
     var email by rememberSaveable { mutableStateOf("") }
-    var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
+    val isSignIn by viewModel.isSignedIn.collectAsState()
     //TODO: Needs proper user error messages
     val errorMessage by viewModel.errorMessage.collectAsState()
+
+    LaunchedEffect(isSignIn) {
+        if (isSignIn) {
+            navController.navigate(Screen.HomeNav) {
+                popUpTo<Screen.HomeNav> { inclusive = true }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.email.collectLatest {
+            email = it
+        }
+        viewModel.password.collectLatest {
+            password = it
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -57,7 +84,7 @@ fun SignUpScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = stringResource(id = R.string.sign_up_title),
+            text = stringResource(id = R.string.sign_in_title),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(vertical = 16.dp)
         )
@@ -82,24 +109,6 @@ fun SignUpScreen(
         )
 
         OutlinedTextField(
-            value = username,
-            onValueChange = {
-                username = it
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            label = { Text(text = stringResource(id = R.string.username_hint)) },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = { keyboardController?.hide() }
-            )
-        )
-
-        OutlinedTextField(
             value = password,
             onValueChange = {
                 password = it
@@ -113,12 +122,21 @@ fun SignUpScreen(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
             ),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardActions = KeyboardActions(
                 onDone = {
                     keyboardController?.hide()
-                    viewModel.signUp(username)
+                    viewModel.signIn()
                 }
-            )
+            ),
+            trailingIcon = {
+                if (password.isNotEmpty()) {
+                    val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, contentDescription = null)
+                    }
+                }
+            }
         )
 
         if (errorMessage != null) {
@@ -131,22 +149,31 @@ fun SignUpScreen(
 
         Button(
             onClick = {
-                viewModel.signUp(username)
+                viewModel.signIn()
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp)
         ) {
-            Text(text = stringResource(id = R.string.sign_up_button))
+            Text(text = stringResource(id = R.string.sign_in_button))
         }
 
         TextButton(
             onClick = {
-                navController.navigate(Screen.SignIn)
+                navController.navigate(Screen.SignUp)
             },
             modifier = Modifier.padding(vertical = 8.dp)
         ) {
-            Text(text = stringResource(id = R.string.sign_in_link))
+            Text(text = stringResource(id = R.string.sign_up_link))
+        }
+
+        TextButton(
+            onClick = {
+                navController.navigate(Screen.ForgotPassword)
+            },
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
+            Text(text = stringResource(id = R.string.forgot_password_link))
         }
     }
 }

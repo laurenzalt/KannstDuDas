@@ -17,8 +17,8 @@ import at.fhj.kannstdudas.presentation.screen.ExploreScreen
 import at.fhj.kannstdudas.presentation.screen.MySkillsScreen
 import at.fhj.kannstdudas.presentation.screen.NewSkillScreen
 import at.fhj.kannstdudas.presentation.screen.ProfileScreen
-import at.fhj.kannstdudas.presentation.shared.navbar.NavBar
-import at.fhj.kannstdudas.presentation.shared.topbar.TopBar
+import at.fhj.kannstdudas.presentation.shared.navigation.NavBar
+import at.fhj.kannstdudas.presentation.shared.navigation.TopBar
 
 /**
  * at.fhj.kannstdudas.navigation
