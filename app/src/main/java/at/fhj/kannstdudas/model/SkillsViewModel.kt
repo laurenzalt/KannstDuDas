@@ -10,7 +10,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SkillsViewModel @Inject constructor() : ViewModel() {
     // Mutable state list of skills that can be observed by the UI
-    var skills = mutableStateListOf(
+    val _skills = mutableStateListOf<Skill>(
         Skill("Soccer", "Learn the basics of playing soccer.", Category.Sports),
         Skill("C# Beginner Course", "Dive into the fascinating world of programming.", Category.Programming),
         Skill("Stock Market Tips", "Learn how to succeed in the stock market.", Category.Finance),
@@ -29,6 +29,6 @@ class SkillsViewModel @Inject constructor() : ViewModel() {
 
     // Method to add a new skill to the list
     fun addSkill(skill: Skill) {
-        skills.add(0, skill)  // Adds to the beginning of the list
+        _skills.add(0, skill)  // Adds to the beginning of the list
     }
 }

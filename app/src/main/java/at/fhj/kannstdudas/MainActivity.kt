@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
             KannstDuDasTheme {
                 MainNavGraph(
                     navController = rememberNavController(),
-                    addSkill = { skill ->
+                    addSkill = { skill:Skill ->
                         skills.add(0, skill)
                     }
                 )

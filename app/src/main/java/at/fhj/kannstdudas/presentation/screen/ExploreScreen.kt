@@ -33,7 +33,7 @@ import at.fhj.kannstdudas.navigation.Screen
 fun ExploreScreen(navController: NavHostController, viewModel: SkillsViewModel = hiltViewModel()) {
     
     Scaffold() { padding ->
-        SkillList(viewModel.skills, padding, onSkillClick = { skill ->
+        SkillList(viewModel._skills, padding, onSkillClick = { skill ->
             // mit id übergeben um zum jeweiligen Skill zu kommen
             navController.navigate(Screen.SkillDetail)
         })
