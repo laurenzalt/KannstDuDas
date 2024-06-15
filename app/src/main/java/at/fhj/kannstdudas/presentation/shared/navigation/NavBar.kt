@@ -1,4 +1,4 @@
-package at.fhj.kannstdudas.presentation.shared.navbar
+package at.fhj.kannstdudas.presentation.shared.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add

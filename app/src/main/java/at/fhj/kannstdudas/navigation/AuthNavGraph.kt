@@ -1,25 +1,26 @@
 package at.fhj.kannstdudas.navigation
 
-import androidx.compose.runtime.Composable
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import at.fhj.kannstdudas.presentation.screen.ForgotPasswordScreen
-import at.fhj.kannstdudas.presentation.screen.SignInScreen
-import at.fhj.kannstdudas.presentation.screen.SignUpScreen
+import androidx.navigation.navigation
+import at.fhj.kannstdudas.presentation.screen.authentication.ForgotPasswordScreen
+import at.fhj.kannstdudas.presentation.screen.authentication.SignInScreen
+import at.fhj.kannstdudas.presentation.screen.authentication.SignUpScreen
 
 /**
  * at.fhj.kannstdudas.navigation
  * Created by Noah Dimmer on 12/06/2024
  */
 
-@Composable
-fun AuthNavGraph(
-    navController: NavHostController,
-    startDestination: Screen = Screen.SignIn) {
-    NavHost(navController, startDestination) {
-        composable<Screen.SignIn>{ SignInScreen(navController) }
+fun NavGraphBuilder.authNavGraph(
+    navController: NavHostController
+) {
+    navigation<Screen.AuthNav>(
+        startDestination = Screen.SignIn,
+    ) {
+        composable<Screen.SignIn> { SignInScreen(navController) }
         composable<Screen.SignUp> { SignUpScreen(navController) }
-        composable<Screen.ForgotPassword> { ForgotPasswordScreen() }
+        composable<Screen.ForgotPassword> { ForgotPasswordScreen(navController) }
     }
 }
