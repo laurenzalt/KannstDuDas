@@ -2,6 +2,11 @@ package at.fhj.kannstdudas.domain.model
 
 import androidx.compose.ui.graphics.Color
 
+/**
+ * at.fhj.kannstdudas.domain.model
+ * Created by Laurenz Altendorfer on 16/06/2024
+ */
+
 enum class Category(val color: Color) {
     Programming(Color(0xFFAED581)),
     Sports(Color(0xFFFFD54F)),

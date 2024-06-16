@@ -7,6 +7,11 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * at.fhj.kannstdudas.data.repository
+ * Created by Laurenz Altendorfer on 16/06/2024
+ */
+
 @Singleton
 class SkillsRepository @Inject constructor() {
     private val _skills = MutableStateFlow<List<Skill>>(emptyList())

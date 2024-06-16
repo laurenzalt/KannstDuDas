@@ -12,6 +12,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * at.fhj.kannstdudas.presentation.viewmodel
+ * Created by Laurenz Altendorfer on 16/06/2024
+ */
 
 @HiltViewModel
 class SkillsViewModel @Inject constructor(

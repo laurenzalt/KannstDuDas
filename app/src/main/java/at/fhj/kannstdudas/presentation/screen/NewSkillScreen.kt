@@ -22,6 +22,10 @@ import at.fhj.kannstdudas.domain.model.Category
 import at.fhj.kannstdudas.domain.model.Skill
 import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
 
+/**
+ * at.fhj.kannstdudas.presentation.screen
+ * Created by Noah Dimmer on 13/06/2024
+ */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

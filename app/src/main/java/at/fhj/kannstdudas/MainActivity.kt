@@ -10,6 +10,11 @@ import at.fhj.kannstdudas.navigation.HomeScreen
 import at.fhj.kannstdudas.presentation.theme.KannstDuDasTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * at.fhj.kannstdudas
+ * Created by Noah Dimmer on 12/06/2024
+ */
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val skills = mutableListOf<Skill>()
