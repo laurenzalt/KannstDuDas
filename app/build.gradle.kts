@@ -73,17 +73,17 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation(libs.androidx.material.icons.extended)
+    implementation("androidx.compose.material:material-icons-extended:1.6.8")
 
     // Splashscreen
-    implementation(libs.androidx.core.splashscreen)
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
     // Worker
-    implementation(libs.androidx.work.runtime.ktx)
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // Dagger & Hilt
-    implementation(libs.hilt.android)
-    implementation(libs.androidx.hilt.navigation.compose)
+    implementation("com.google.dagger:hilt-android:2.48")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     ksp(libs.google.hilt.compiler)
 
     // Navigation
