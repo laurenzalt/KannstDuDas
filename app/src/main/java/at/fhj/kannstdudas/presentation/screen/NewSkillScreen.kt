@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import at.fhj.kannstdudas.model.Category
-import at.fhj.kannstdudas.model.Skill
-import at.fhj.kannstdudas.model.SkillsViewModel
+import at.fhj.kannstdudas.domain.model.Category
+import at.fhj.kannstdudas.domain.model.Skill
+import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,10 +1,8 @@
 package at.fhj.kannstdudas.presentation.screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,27 +18,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CardDefaults
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import at.fhj.kannstdudas.model.Category
-import at.fhj.kannstdudas.model.Skill
-import at.fhj.kannstdudas.model.SkillsViewModel
+import at.fhj.kannstdudas.domain.model.Skill
+import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
 import at.fhj.kannstdudas.navigation.Screen
 
 @Composable
-fun ExploreScreen(navController: NavHostController, viewModel: SkillsViewModel = viewModel()) {
+fun ExploreScreen(navController: NavHostController, viewModel: SkillsViewModel = hiltViewModel()) {
     val skills = viewModel.skills.collectAsState().value
 
-    Scaffold() { padding ->
-        SkillList(skills, padding, onSkillClick = { skill ->
-            // mit id übergeben um zum jeweiligen Skill zu kommen
-            navController.navigate(Screen.SkillDetail)
-        })
+    Box {
+        Scaffold() { padding ->
+            SkillList(skills, padding, onSkillClick = {
+                navController.navigate(Screen.SkillDetail)
+            })
+        }
     }
 }
 

@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
-import at.fhj.kannstdudas.model.Skill
+import at.fhj.kannstdudas.domain.model.Skill
 import at.fhj.kannstdudas.navigation.HomeScreen
 import at.fhj.kannstdudas.presentation.theme.KannstDuDasTheme
 import dagger.hilt.android.AndroidEntryPoint
