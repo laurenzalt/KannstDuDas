@@ -28,6 +28,9 @@ class AuthViewModel @Inject constructor(
     private val signOutUseCase: SignOutUseCase
 ) : ViewModel() {
 
+    private val _isSignedIn = MutableStateFlow(false)
+    val isSignedIn: StateFlow<Boolean> = _isSignedIn
+
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email
 
@@ -53,8 +56,10 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 signInUseCase(user)
-                _errorMessage.value = null
+                _isSignedIn.value = true
+                _errorMessage.value = "Sign in successful"
             } catch (e: Exception) {
+                _isSignedIn.value = false
                 _errorMessage.value = e.message
             }
         }
@@ -65,7 +70,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 signUpUseCase(user)
-                _errorMessage.value = null
+                _errorMessage.value = "Sign up successful"
             } catch (e: Exception) {
                 _errorMessage.value = e.message
             }

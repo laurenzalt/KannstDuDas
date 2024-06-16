@@ -20,9 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CardDefaults
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.model.Category
 import at.fhj.kannstdudas.model.Skill
@@ -30,10 +33,11 @@ import at.fhj.kannstdudas.model.SkillsViewModel
 import at.fhj.kannstdudas.navigation.Screen
 
 @Composable
-fun ExploreScreen(navController: NavHostController, viewModel: SkillsViewModel = hiltViewModel()) {
-    
+fun ExploreScreen(navController: NavHostController, viewModel: SkillsViewModel = viewModel()) {
+    val skills = viewModel.skills.collectAsState().value
+
     Scaffold() { padding ->
-        SkillList(viewModel._skills, padding, onSkillClick = { skill ->
+        SkillList(skills, padding, onSkillClick = { skill ->
             // mit id übergeben um zum jeweiligen Skill zu kommen
             navController.navigate(Screen.SkillDetail)
         })

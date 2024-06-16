@@ -13,10 +13,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import at.fhj.kannstdudas.navigation.Screen
 
 /**
@@ -25,11 +27,11 @@ import at.fhj.kannstdudas.navigation.Screen
  */
 
 @Composable
-fun TopBar(navController: NavHostController, screen: Screen) {
+fun TopBar(navController: NavHostController, screen: String) {
     TopAppBar(
         title = {
             Text(
-                text = screen.id,
+                text = screen,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

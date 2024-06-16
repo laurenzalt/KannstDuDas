@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import at.fhj.kannstdudas.model.Skill
-import at.fhj.kannstdudas.navigation.MainNavGraph
+import at.fhj.kannstdudas.navigation.HomeScreen
 import at.fhj.kannstdudas.presentation.theme.KannstDuDasTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,11 +18,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             KannstDuDasTheme {
-                MainNavGraph(
-                    navController = rememberNavController(),
-                    addSkill = { skill:Skill ->
-                        skills.add(0, skill)
-                    }
+                HomeScreen(
+                    navController = rememberNavController()
                 )
             }
         }
