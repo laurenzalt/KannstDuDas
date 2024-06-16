@@ -17,6 +17,7 @@ import at.fhj.kannstdudas.presentation.screen.ExploreScreen
 import at.fhj.kannstdudas.presentation.screen.MySkillsScreen
 import at.fhj.kannstdudas.presentation.screen.NewSkillScreen
 import at.fhj.kannstdudas.presentation.screen.ProfileScreen
+import at.fhj.kannstdudas.presentation.screen.SkillDetailScreen
 import at.fhj.kannstdudas.presentation.shared.navigation.NavBar
 import at.fhj.kannstdudas.presentation.shared.navigation.TopBar
 
@@ -46,8 +47,9 @@ fun HomeScreen(
         ) {
             composable<Screen.Explore> { ExploreScreen(navController) }
             composable<Screen.NewSkill> { NewSkillScreen(navController) }
-            composable<Screen.MySkills> { MySkillsScreen() }
+            composable<Screen.MySkills> { MySkillsScreen(navController) }
             composable<Screen.Profile> { ProfileScreen() }
+            composable<Screen.SkillDetail> { SkillDetailScreen() }
         }
     }
 }
