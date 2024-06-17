@@ -35,13 +35,12 @@ import androidx.compose.runtime.collectAsState
  * Created by Noah Dimmer on 13/06/2024
  */
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun MySkillsScreen(navController: NavHostController, viewModel: SkillsViewModel = hiltViewModel()) {
     var showMySkills by remember { mutableStateOf(false) }
 
     Box {
-        Scaffold() { padding ->
+        Scaffold { padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
@@ -54,6 +53,7 @@ fun MySkillsScreen(navController: NavHostController, viewModel: SkillsViewModel 
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 ) {
+                    // TODO: center and just show one of the texts
                     Text("My Skills", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(end = 16.dp))
                     Switch(
                         checked = showMySkills,
@@ -66,13 +66,21 @@ fun MySkillsScreen(navController: NavHostController, viewModel: SkillsViewModel 
                     targetState = showMySkills,
                     transitionSpec = {
                         if (!targetState) {
-                            slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween(500)) + fadeIn(animationSpec = tween(500)) with
-                                    slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = tween(500)) + fadeOut(animationSpec = tween(500))
+                            (slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween(500)) + fadeIn(animationSpec = tween(500))).togetherWith(
+                                slideOutHorizontally(
+                                    targetOffsetX = { -1000 },
+                                    animationSpec = tween(500)
+                                ) + fadeOut(animationSpec = tween(500))
+                            )
                         } else {
-                            slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween(500)) + fadeIn(animationSpec = tween(500)) with
-                                    slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = tween(500)) + fadeOut(animationSpec = tween(500))
+                            (slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween(500)) + fadeIn(animationSpec = tween(500))).togetherWith(
+                                slideOutHorizontally(
+                                    targetOffsetX = { 1000 },
+                                    animationSpec = tween(500)
+                                ) + fadeOut(animationSpec = tween(500))
+                            )
                         }
-                    }
+                    }, label = ""
                 ) { displayMySkills ->
                     if (!displayMySkills) {
                         MySkillList(skills = viewModel.mySkills.collectAsState().value, padding, onSkillClick = {

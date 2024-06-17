@@ -17,10 +17,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.domain.model.Skill
 import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
@@ -28,11 +36,32 @@ import at.fhj.kannstdudas.navigation.Screen
 
 @Composable
 fun ExploreScreen(navController: NavHostController, viewModel: SkillsViewModel = hiltViewModel()) {
-    val skills = viewModel.skills.collectAsState().value
+    val filteredSkills = viewModel.filteredSkills.collectAsState(initial = listOf()).value
+    var searchQuery by remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Box {
-        Scaffold() { padding ->
-            SkillList(skills, padding, onSkillClick = {
+        Scaffold(
+            topBar = {
+                TextField(
+                    value = searchQuery,
+                    onValueChange = {
+                        searchQuery = it
+                        viewModel.setSearchQuery(it)
+                    },
+                    label = { Text("Search Skills") },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    })
+                )
+            }
+        ) { padding ->
+            SkillList(filteredSkills, padding, onSkillClick = {
                 navController.navigate(Screen.SkillDetail)
             })
         }

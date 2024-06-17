@@ -7,20 +7,28 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.domain.model.Category
 import at.fhj.kannstdudas.domain.model.Skill
+import at.fhj.kannstdudas.navigation.Screen
 import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
+import kotlinx.coroutines.launch
 
 /**
  * at.fhj.kannstdudas.presentation.screen
@@ -30,23 +38,19 @@ import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewSkillScreen(navController: NavHostController, viewModel: SkillsViewModel = hiltViewModel()) {
-    var title by remember {
-        mutableStateOf("")
-    }
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var isExpanded by remember { mutableStateOf(false) }
+    var category by remember { mutableStateOf(Category.Programming) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
-    var description by remember {
-        mutableStateOf("")
-    }
 
-    var isExpanded by remember {
-        mutableStateOf(false)
-    }
-
-    var category by remember {
-        mutableStateOf(Category.Programming)
-    }
-
-    Scaffold { padding ->
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -56,105 +60,93 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillsViewModel 
         ) {
             OutlinedTextField(
                 value = title,
-                onValueChange = { title = it },
+                onValueChange = {
+                    if (it.length <= 28) title = it
+                },
                 label = { Text("Title") },
                 singleLine = true,
+                trailingIcon = {
+                    Text("${title.length}/28", style = MaterialTheme.typography.bodySmall)
+                },
                 modifier = Modifier.fillMaxWidth()
             )
             ExposedDropdownMenuBox(
                 expanded = isExpanded,
-                onExpandedChange = { isExpanded = it }
+                onExpandedChange = { isExpanded = it },
+                modifier = Modifier.fillMaxWidth()
             ) {
                 TextField(
                     value = category.name,
                     onValueChange = {},
                     readOnly = true,
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
-                    },
-                    modifier = Modifier.menuAnchor()
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth()
                 )
-
                 ExposedDropdownMenu(
                     expanded = isExpanded,
-                    onDismissRequest = { isExpanded = false }
+                    onDismissRequest = { isExpanded = false },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     DropdownMenuItem(
-                        text = {
-                            Text(text = "Programming")
-                        },
+                        text = { Text(text = "Programming") },
                         onClick = {
                             category = Category.Programming
                             isExpanded = false
                         }
                     )
                     DropdownMenuItem(
-                        text = {
-                            Text(text = "Sports")
-                        },
+                        text = { Text(text = "Sports") },
                         onClick = {
                             category = Category.Sports
                             isExpanded = false
                         }
                     )
                     DropdownMenuItem(
-                        text = {
-                            Text(text = "Finance")
-                        },
+                        text = { Text(text = "Finance") },
                         onClick = {
                             category = Category.Finance
                             isExpanded = false
                         }
                     )
                     DropdownMenuItem(
-                        text = {
-                            Text(text = "Art")
-                        },
+                        text = { Text(text = "Art") },
                         onClick = {
                             category = Category.Art
                             isExpanded = false
                         }
                     )
                     DropdownMenuItem(
-                        text = {
-                            Text(text = "Music")
-                        },
+                        text = { Text(text = "Music") },
                         onClick = {
                             category = Category.Music
                             isExpanded = false
                         }
                     )
                     DropdownMenuItem(
-                        text = {
-                            Text(text = "Languages")
-                        },
+                        text = { Text(text = "Languages") },
                         onClick = {
                             category = Category.Languages
                             isExpanded = false
                         }
                     )
                     DropdownMenuItem(
-                        text = {
-                            Text(text = "Health")
-                        },
+                        text = { Text(text = "Health") },
                         onClick = {
                             category = Category.Health
                             isExpanded = false
                         }
                     )
                     DropdownMenuItem(
-                        text = {
-                            Text(text = "Fitness")
-                        },
+                        text = { Text(text = "Fitness") },
                         onClick = {
                             category = Category.Fitness
                             isExpanded = false
                         }
                     )
                     DropdownMenuItem(
-                        text = {
-                            Text(text = "Other")
-                        },
+                        text = { Text(text = "Other") },
                         onClick = {
                             category = Category.Other
                             isExpanded = false
@@ -167,14 +159,27 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillsViewModel 
                 onValueChange = { description = it },
                 label = { Text("Description") },
                 modifier = Modifier.fillMaxWidth(),
-                maxLines = 5,
+                maxLines = 20,
                 textStyle = LocalTextStyle.current.copy(lineHeight = 20.sp)
             )
             Button(
                 onClick = {
                     if (title.isNotEmpty() && description.isNotEmpty()) {
                         viewModel.addSkill(Skill(title, description, category))
-                        navController.popBackStack()
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = "Skill added successfully!",
+                                duration = SnackbarDuration.Short
+                            )
+
+                        }
+                        // just for now
+                        title = ""
+                        category = Category.Programming
+                        description = ""
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                        // navController.navigate(Screen.Explore)
                     }
                 },
                 modifier = Modifier.align(Alignment.End)
@@ -182,6 +187,5 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillsViewModel 
                 Text("Create")
             }
         }
-
     }
 }
