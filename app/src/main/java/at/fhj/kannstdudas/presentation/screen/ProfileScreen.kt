@@ -20,10 +20,13 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,7 +40,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import at.fhj.kannstdudas.R
 import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 
@@ -50,6 +52,15 @@ import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 fun ProfileScreen(
     viewModel: AuthViewModel = hiltViewModel()
 ) {
+    var isUserFetched by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if (!isUserFetched) {
+            viewModel.fetchCurrentUser()
+            isUserFetched = true
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -57,32 +68,34 @@ fun ProfileScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Greeting()
-        ProfilePicture()
-        UserInfo()
-        Logout()
+        Greeting(viewModel)
+        ProfilePicture(viewModel)
+        UserInfo(viewModel)
+        Logout(viewModel)
     }
 }
 
 @Composable
-fun Greeting(
-    viewModel: AuthViewModel = hiltViewModel()
-) {
-    val currentUser = viewModel.fetchCurrentUser()
+fun Greeting(viewModel: AuthViewModel) {
+    val user by viewModel.user.collectAsState()
     Text(
-        text = "Hello, $currentUser",
+        text = "Hello, ${user?.username ?: "Guest"}",
         fontWeight = FontWeight.Bold,
         fontSize = 26.sp,
-        overflow = TextOverflow.Ellipsis)
+        overflow = TextOverflow.Ellipsis
+    )
 }
 
 @Composable
-fun ProfilePicture() {
+fun ProfilePicture(viewModel: AuthViewModel) {
+    val user by viewModel.user.collectAsState()
 
-    //TODO: Firestore user image?
-    val imageUri = rememberSaveable { mutableStateOf("") }
-
-    val painter = painterResource(id = R.drawable.test_profile_icon)
+    val painter = if (user?.profilePicture?.isNotEmpty() == true) {
+        // Use the user’s profile picture from the URL (placeholder here)
+        painterResource(id = R.drawable.test_profile_icon)
+    } else {
+        painterResource(id = R.drawable.test_profile_icon)
+    }
 
     Box(
         contentAlignment = Alignment.Center,
@@ -103,14 +116,15 @@ fun ProfilePicture() {
 }
 
 @Composable
-fun UserInfo() {
+fun UserInfo(viewModel: AuthViewModel) {
+    val user by viewModel.user.collectAsState()
     val padding = Modifier.padding(8.dp)
 
     Card(
         modifier = padding
     ) {
         Column(modifier = padding) {
-            StyledText(label = "Vorname", value = "Placeholder")
+            StyledText(label = "Vorname", value = user?.username ?: "Placeholder")
             Spacer(modifier = Modifier.height(4.dp))
             HorizontalDivider()
             Spacer(modifier = Modifier.height(4.dp))
@@ -118,7 +132,7 @@ fun UserInfo() {
             Spacer(modifier = Modifier.height(4.dp))
             HorizontalDivider()
             Spacer(modifier = Modifier.height(4.dp))
-            StyledText(label = "Email", value = "nofirestore@test.com")
+            StyledText(label = "Email", value = user?.email ?: "nofirestore@test.com")
         }
     }
 }
@@ -137,11 +151,10 @@ fun StyledText(label: String, value: String) {
 }
 
 @Composable
-fun Logout(
-    viewModel: AuthViewModel = hiltViewModel()
-) {
+fun Logout(viewModel: AuthViewModel) {
     Button(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(8.dp),
         onClick = { viewModel.logoutUser() },
     ) {

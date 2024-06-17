@@ -61,7 +61,7 @@ fun ForgotPasswordScreen(
             value = email,
             onValueChange = {
                 email = it
-                viewModel.setEmail(it)
+                viewModel.setUserEmail(it)
             },
             modifier = Modifier
                 .fillMaxWidth()

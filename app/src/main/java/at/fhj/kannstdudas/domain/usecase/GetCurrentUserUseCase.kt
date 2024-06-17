@@ -1,7 +1,7 @@
 package at.fhj.kannstdudas.domain.usecase
 
 import at.fhj.kannstdudas.data.repository.UserRepository
-import at.fhj.kannstdudas.domain.model.User
+import at.fhj.kannstdudas.domain.User
 import com.google.firebase.auth.FirebaseUser
 import javax.inject.Inject
 
@@ -13,7 +13,7 @@ import javax.inject.Inject
 class GetCurrentUserUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
-    suspend operator fun invoke(): FirebaseUser? {
+    suspend operator fun invoke(): User? {
         return userRepository.getCurrentUser()
     }
 }

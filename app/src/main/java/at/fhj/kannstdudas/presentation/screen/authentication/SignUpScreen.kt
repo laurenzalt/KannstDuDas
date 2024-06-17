@@ -70,7 +70,7 @@ fun SignUpScreen(
 
     LaunchedEffect(passwordMatch) {
         if (passwordMatch) {
-            viewModel.setPassword(password)
+            viewModel.setUserPassword(password)
         }
     }
 
@@ -88,10 +88,29 @@ fun SignUpScreen(
         )
 
         OutlinedTextField(
+            value = username,
+            onValueChange = {
+                username = it
+                viewModel.setUsername(it)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            label = { Text(text = stringResource(id = R.string.username_hint)) },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { keyboardController?.hide() }
+            )
+        )
+
+        OutlinedTextField(
             value = email,
             onValueChange = {
                 email = it
-                viewModel.setEmail(it)
+                viewModel.setUserEmail(it)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -175,7 +194,7 @@ fun SignUpScreen(
         Button(
             onClick = {
                 if (passwordMatch) {
-                    viewModel.signUp(username)
+                    viewModel.signUp()
                 }
             },
             modifier = Modifier
