@@ -1,7 +1,6 @@
 package at.fhj.kannstdudas.domain.usecase
 
 import at.fhj.kannstdudas.data.repository.UserRepository
-import at.fhj.kannstdudas.domain.model.User
 import javax.inject.Inject
 
 /**
@@ -10,7 +9,7 @@ import javax.inject.Inject
  */
 
 class SignOutUseCase @Inject constructor(private val userRepository: UserRepository) {
-    suspend operator fun invoke() {
+    operator fun invoke() {
         userRepository.signOut()
     }
 }

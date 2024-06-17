@@ -2,7 +2,7 @@ package at.fhj.kannstdudas.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.fhj.kannstdudas.domain.model.User
+import at.fhj.kannstdudas.domain.User
 import at.fhj.kannstdudas.domain.usecase.GetCurrentUserUseCase
 import at.fhj.kannstdudas.domain.usecase.ResetPasswordUseCase
 import at.fhj.kannstdudas.domain.usecase.SignInUseCase
@@ -24,40 +24,39 @@ class AuthViewModel @Inject constructor(
     private val signInUseCase: SignInUseCase,
     private val signUpUseCase: SignUpUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
-    private  val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val signOutUseCase: SignOutUseCase
 ) : ViewModel() {
 
     private val _isSignedIn = MutableStateFlow(false)
     val isSignedIn: StateFlow<Boolean> = _isSignedIn
 
-    private val _email = MutableStateFlow("")
-    val email: StateFlow<String> = _email
-
-    private val _password = MutableStateFlow("")
-    val password: StateFlow<String> = _password
-
-    private val _currentUser = MutableStateFlow<String?>(null)
-    val currentUser: StateFlow<String?> = _currentUser
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> = _user
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
-    fun setEmail(email: String) {
-        _email.value = email
+    fun setUserEmail(email: String) {
+        _user.value = _user.value?.copy(email = email) ?: User(email = email, username = "", password = "", profilePicture = "")
     }
 
-    fun setPassword(password: String) {
-        _password.value = password
+    fun setUserPassword(password: String) {
+        _user.value = _user.value?.copy(password = password) ?: User(email = "", username = "", password = password, profilePicture = "")
+    }
+
+    fun setUsername(username: String) {
+        _user.value = _user.value?.copy(username = username) ?: User(email = "", username = username, password = "", profilePicture = "")
     }
 
     fun signIn() {
-        val user = User(email = email.value, username = "", password = password.value)
+        val user = _user.value ?: return
         viewModelScope.launch {
             try {
                 signInUseCase(user)
                 _isSignedIn.value = true
                 _errorMessage.value = "Sign in successful"
+                fetchCurrentUser()
             } catch (e: Exception) {
                 _isSignedIn.value = false
                 _errorMessage.value = e.message
@@ -65,12 +64,13 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun signUp(username: String) {
-        val user = User(email = email.value, username = username, password = password.value)
+    fun signUp() {
+        val user = _user.value ?: return
         viewModelScope.launch {
             try {
                 signUpUseCase(user)
                 _errorMessage.value = "Sign up successful"
+                fetchCurrentUser()
             } catch (e: Exception) {
                 _errorMessage.value = e.message
             }
@@ -78,10 +78,10 @@ class AuthViewModel @Inject constructor(
     }
 
     fun resetPassword() {
-        val user = User(email = email.value, username = "", password = password.value)
+        val email = _user.value?.email ?: return
         viewModelScope.launch {
             try {
-                resetPasswordUseCase(user)
+                resetPasswordUseCase(User(email = email, username = "", password = "", profilePicture = ""))
                 _errorMessage.value = "Reset password E-Mail sent"
             } catch (e: Exception) {
                 _errorMessage.value = e.message
@@ -93,18 +93,20 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val currentUser = getCurrentUserUseCase()
-                _currentUser.value = currentUser?.email
+                _user.value = currentUser
             } catch (e: Exception) {
                 _errorMessage.value = e.message
             }
         }
-        return currentUser.value ?: "User not found"
+        return _user.value?.username ?: "User not found"
     }
 
     fun logoutUser() {
         viewModelScope.launch {
             try {
                 signOutUseCase()
+                _user.value = null
+                _isSignedIn.value = false
             } catch (e: Exception) {
                 _errorMessage.value = e.message
             }

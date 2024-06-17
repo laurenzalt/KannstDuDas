@@ -1,6 +1,7 @@
 package at.fhj.kannstdudas.data.repository
 
-import at.fhj.kannstdudas.domain.model.User
+import at.fhj.kannstdudas.domain.User
+import at.fhj.kannstdudas.domain.datasource.UserDataSource
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -11,13 +12,18 @@ import javax.inject.Inject
  */
 
 class UserRepository @Inject constructor(
-    private val firebaseAuth: FirebaseAuth
-) {    suspend fun signIn(user: User) {
-    firebaseAuth.signInWithEmailAndPassword(user.email, user.password).await()
-}
+    private val firebaseAuth: FirebaseAuth,
+    private val userDataSource: UserDataSource
+) {
+    suspend fun signIn(user: User) {
+        firebaseAuth.signInWithEmailAndPassword(user.email, user.password).await()
+    }
 
     suspend fun signUp(user: User) {
-        firebaseAuth.createUserWithEmailAndPassword(user.email, user.password).await()
+        val result = firebaseAuth.createUserWithEmailAndPassword(user.email, user.password).await()
+        val firebaseUser = result.user ?: throw Exception("Failed to create user")
+        val newUser = user.copy(uid = firebaseUser.uid)
+        userDataSource.saveUser(newUser)
     }
 
     suspend fun sendPasswordResetEmail(email: String) {
@@ -28,5 +34,8 @@ class UserRepository @Inject constructor(
         firebaseAuth.signOut()
     }
 
-    fun getCurrentUser() = firebaseAuth.currentUser
+    suspend fun getCurrentUser(): User? {
+        val uid = firebaseAuth.currentUser?.uid
+        return uid?.let { userDataSource.getUser(it) }
+    }
 }

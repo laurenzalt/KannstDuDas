@@ -68,11 +68,9 @@ fun SignInScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.email.collectLatest {
-            email = it
-        }
-        viewModel.password.collectLatest {
-            password = it
+        viewModel.user.collectLatest { user ->
+            email = user?.email ?: ""
+            password = user?.password ?: ""
         }
     }
 
@@ -93,7 +91,7 @@ fun SignInScreen(
             value = email,
             onValueChange = {
                 email = it
-                viewModel.setEmail(it)
+                viewModel.setUserEmail(it)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -112,7 +110,7 @@ fun SignInScreen(
             value = password,
             onValueChange = {
                 password = it
-                viewModel.setPassword(it)
+                viewModel.setUserPassword(it)
             },
             modifier = Modifier
                 .fillMaxWidth()
