@@ -22,11 +22,6 @@ class SkillsRepository @Inject constructor() {
     val mySkills: StateFlow<List<Skill>> = _mySkills
     val subscribedSkills: StateFlow<List<Skill>> = _subscribedSkills
 
-    fun addSkill(skill: Skill) {
-        val updatedList = listOf(skill) + _skills.value
-        _skills.value = updatedList
-    }
-
     init {
         loadInitialSkills()
     }
@@ -82,5 +77,10 @@ class SkillsRepository @Inject constructor() {
             Skill("Spanish for Beginners", "Start learning Spanish today!", Category.Languages),
             Skill("Yoga for Beginners", "Learn the basics of yoga for health and relaxation.", Category.Fitness)
         )
+    }
+
+    fun addSkill(skill: Skill) {
+        val updatedList = listOf(skill) + _skills.value
+        _skills.value = updatedList
     }
 }
