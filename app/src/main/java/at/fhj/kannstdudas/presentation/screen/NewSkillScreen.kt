@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.domain.model.Category
 import at.fhj.kannstdudas.domain.model.Skill
+import at.fhj.kannstdudas.navigation.Screen
 import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
 
 /**
@@ -174,7 +175,7 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillsViewModel 
                 onClick = {
                     if (title.isNotEmpty() && description.isNotEmpty()) {
                         viewModel.addSkill(Skill(title, description, category))
-                        navController.popBackStack()
+                        navController.navigate(Screen.Explore)
                     }
                 },
                 modifier = Modifier.align(Alignment.End)
