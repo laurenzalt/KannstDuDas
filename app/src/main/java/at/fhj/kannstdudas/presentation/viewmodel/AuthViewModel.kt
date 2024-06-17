@@ -102,7 +102,6 @@ class AuthViewModel @Inject constructor(
     }
 
     fun logoutUser() {
-        val user = User(email = email.value, username = "", password = password.value)
         viewModelScope.launch {
             try {
                 signOutUseCase()

@@ -1,8 +1,10 @@
 [versions]
 agp = "8.4.2"
+coreSplashscreen = "1.0.1"
 daggerCompiler = "2.51.1"
 hiltAndroidGradlePluglin = "2.48"
 hiltCompilerVersion = "2.48"
+hiltNavigationCompose = "1.2.0"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -12,17 +14,25 @@ lifecycleRuntimeKtx = "2.8.2"
 activityCompose = "1.9.0"
 composeBom = "2024.06.00"
 composeNavigation = "2.8.0-beta03"
+materialIconsExtended = "1.6.8"
 navigationCompose = "2.7.7"
 serialization = "1.7.0"
 googleGmsGoogleServices = "4.4.2"
 firebaseAuth = "23.0.0"
 dagger = "2.51.1"
+workRuntimeKtx = "2.9.0"
+firebaseFirestore = "25.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-navigation-compose-v277 = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerCompiler" }
 google-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltCompilerVersion" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidGradlePluglin" }
 hilt-android-gradle-pluglin = { module = "com.google.dagger:hilt-android-gradle-pluglin", version.ref = "hiltAndroidGradlePluglin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -40,6 +50,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization"}
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
