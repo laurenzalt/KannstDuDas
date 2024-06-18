@@ -3,6 +3,7 @@ package at.fhj.kannstdudas.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.fhj.kannstdudas.domain.User
+import at.fhj.kannstdudas.domain.usecase.CheckAuthStatusUseCase
 import at.fhj.kannstdudas.domain.usecase.GetCurrentUserUseCase
 import at.fhj.kannstdudas.domain.usecase.ResetPasswordUseCase
 import at.fhj.kannstdudas.domain.usecase.SignInUseCase
@@ -25,7 +26,8 @@ class AuthViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val signOutUseCase: SignOutUseCase
+    private val signOutUseCase: SignOutUseCase,
+    private  val checkAuthStatusUseCase: CheckAuthStatusUseCase
 ) : ViewModel() {
 
     private val _isSignedIn = MutableStateFlow(false)
@@ -36,6 +38,17 @@ class AuthViewModel @Inject constructor(
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
+
+    init {
+        checkAuthStatus()
+    }
+
+    private fun checkAuthStatus() {
+        _isSignedIn.value = checkAuthStatusUseCase.invoke()
+        if (_isSignedIn.value) {
+            fetchCurrentUser()
+        }
+    }
 
     fun setUserEmail(email: String) {
         _user.value = _user.value?.copy(email = email) ?: User(email = email, username = "", password = "", profilePicture = "")

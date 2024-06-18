@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,7 +39,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.R
+import at.fhj.kannstdudas.navigation.Screen
 import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 
 /**
@@ -50,9 +51,10 @@ import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 
 @Composable
 fun ProfileScreen(
-    viewModel: AuthViewModel = hiltViewModel()
+    viewModel: AuthViewModel = hiltViewModel(),
+    navController: NavHostController
 ) {
-    var isUserFetched by remember { mutableStateOf(false) }
+    var isUserFetched by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         if (!isUserFetched) {
@@ -71,7 +73,7 @@ fun ProfileScreen(
         Greeting(viewModel)
         ProfilePicture(viewModel)
         UserInfo(viewModel)
-        Logout(viewModel)
+        Logout(viewModel, navController)
     }
 }
 
@@ -151,12 +153,17 @@ fun StyledText(label: String, value: String) {
 }
 
 @Composable
-fun Logout(viewModel: AuthViewModel) {
+fun Logout(viewModel: AuthViewModel, navController: NavHostController) {
     Button(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        onClick = { viewModel.logoutUser() },
+        onClick = {
+            viewModel.logoutUser()
+            navController.navigate(Screen.AuthNav) {
+                popUpTo<Screen.AuthNav>{ inclusive  = true }
+            }
+                  },
     ) {
         Text(stringResource(R.string.profile_logout))
     }
