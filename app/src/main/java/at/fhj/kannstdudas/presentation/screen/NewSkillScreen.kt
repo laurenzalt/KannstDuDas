@@ -165,7 +165,7 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillsViewModel 
             Button(
                 onClick = {
                     if (title.isNotEmpty() && description.isNotEmpty()) {
-                        viewModel.addSkill(Skill(title, description, category))
+                        viewModel.addSkill(Skill("", title, description, category))
                         coroutineScope.launch {
                             snackbarHostState.showSnackbar(
                                 message = "Skill added successfully!",

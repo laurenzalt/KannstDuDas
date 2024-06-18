@@ -61,8 +61,8 @@ fun ExploreScreen(navController: NavHostController, viewModel: SkillsViewModel =
                 )
             }
         ) { padding ->
-            SkillList(filteredSkills, padding, onSkillClick = {
-                navController.navigate(Screen.SkillDetail)
+            SkillList(filteredSkills, padding, onSkillClick = { skill ->
+                navController.navigate("SkillDetail/${skill.id}")
             })
         }
     }

@@ -65,7 +65,10 @@ fun HomeScreen(
             composable<Screen.NewSkill> { NewSkillScreen(navController) }
             composable<Screen.MySkills> { MySkillsScreen(navController) }
             composable<Screen.Profile> { ProfileScreen(navController = navController) }
-            composable<Screen.SkillDetail> { SkillDetailScreen() }
+            composable("SkillDetail/{skillId}") { backStackEntry ->
+                val skillId = backStackEntry.arguments?.getString("skillId") ?: ""
+                SkillDetailScreen(skillId, navController)
+            }
         }
     }
 }
