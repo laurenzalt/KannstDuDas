@@ -39,32 +39,33 @@ fun ExploreScreen(navController: NavHostController, viewModel: SkillsViewModel =
     var searchQuery by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Box {
-        Scaffold(
-            topBar = {
-                TextField(
-                    value = searchQuery,
-                    onValueChange = {
-                        searchQuery = it
-                        viewModel.setSearchQuery(it)
-                    },
-                    label = { Text("Search Skills") },
-                    singleLine = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = {
-                        keyboardController?.hide()
-                    })
-                )
-            }
-        ) { padding ->
-            SkillList(filteredSkills, padding, onSkillClick = { skill ->
-                navController.navigate("SkillDetail/${skill.id}")
-            })
+    Scaffold(
+        topBar = {
+            SearchBar(searchQuery, onQueryChanged = {
+                searchQuery = it
+                viewModel.setSearchQuery(it)
+            }, onDone = { keyboardController?.hide() })
         }
+    ) { padding ->
+        SkillList(filteredSkills, padding, onSkillClick = { skill ->
+            navController.navigate("SkillDetail/${skill.id}")
+        })
     }
+}
+
+@Composable
+fun SearchBar(query: String, onQueryChanged: (String) -> Unit, onDone: () -> Unit) {
+    TextField(
+        value = query,
+        onValueChange = onQueryChanged,
+        label = { Text("Search Skills") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { onDone() })
+    )
 }
 
 @Composable

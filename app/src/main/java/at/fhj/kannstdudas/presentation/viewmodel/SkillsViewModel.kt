@@ -43,4 +43,43 @@ class SkillsViewModel @Inject constructor(
     fun getSkillById(id: String): Skill? {
         return skillsRepository.getSkillById(id)
     }
+
+    fun addSubscribedSkill(skill: Skill) {
+        viewModelScope.launch {
+            skillsRepository.addSubscribedSkill(skill)
+        }
+    }
+
+    fun addMySkills(skill: Skill) {
+        viewModelScope.launch {
+            skillsRepository.addMySkills(skill)
+        }
+    }
+
+    fun isMySkill(skillId: String): Boolean {
+        return mySkills.value.any { it.id == skillId }
+    }
+
+    fun deleteSkill(skill: Skill) {
+        viewModelScope.launch {
+            skillsRepository.deleteSkill(skill.id)
+        }
+    }
+
+    fun editSkill(skill: Skill) {
+        viewModelScope.launch {
+            skillsRepository.updateSkill(skill)
+        }
+    }
+
+    fun isSubscribedSkill(skillId: String): Boolean {
+        return subscribedSkills.value.any { it.id == skillId }
+    }
+
+    fun unsubscribeSkill(skill: Skill) {
+        viewModelScope.launch {
+            skillsRepository.removeSubscribedSkill(skill.id)
+        }
+    }
+
 }

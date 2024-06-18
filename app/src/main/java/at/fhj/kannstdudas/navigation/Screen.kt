@@ -9,6 +9,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class Screen(val label: String) {
+    // Screen Routes
+    @Serializable
+    data object Splash: Screen("Splash")
     @Serializable
     data object Explore: Screen("Explore")
     @Serializable
@@ -25,4 +28,6 @@ sealed class Screen(val label: String) {
     data object  ForgotPassword: Screen("Forgot Password")
     @Serializable
     data object SkillDetail: Screen("Skill Detail")
+    @Serializable
+    data object EditSkill: Screen("Edit Skill")
 }
