@@ -44,4 +44,8 @@ class SkillsViewModel @Inject constructor(
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
     }
+
+    fun getSkillById(id: String): Skill? {
+        return skillsRepository.getSkillById(id)
+    }
 }
