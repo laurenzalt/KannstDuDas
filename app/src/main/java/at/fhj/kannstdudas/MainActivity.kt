@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import at.fhj.kannstdudas.domain.model.Skill
-import at.fhj.kannstdudas.navigation.HomeScreen
 import at.fhj.kannstdudas.navigation.RootNavGraph
 import at.fhj.kannstdudas.presentation.theme.KannstDuDasTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,9 +24,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             KannstDuDasTheme {
                 RootNavGraph(navController = rememberNavController())
-//                HomeScreen(
-//                    navController = rememberNavController()
-//                )
             }
         }
     }

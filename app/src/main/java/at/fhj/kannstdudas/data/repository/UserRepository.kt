@@ -34,6 +34,10 @@ class UserRepository @Inject constructor(
         firebaseAuth.signOut()
     }
 
+    fun isUserAuthenticated(): Boolean {
+        return firebaseAuth.currentUser != null
+    }
+
     suspend fun getCurrentUser(): User? {
         val uid = firebaseAuth.currentUser?.uid
         return uid?.let { userDataSource.getUser(it) }

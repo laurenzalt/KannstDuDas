@@ -9,10 +9,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navigation
 import at.fhj.kannstdudas.presentation.screen.ExploreScreen
 import at.fhj.kannstdudas.presentation.screen.MySkillsScreen
 import at.fhj.kannstdudas.presentation.screen.NewSkillScreen
@@ -25,6 +27,20 @@ import at.fhj.kannstdudas.presentation.shared.navigation.TopBar
  * at.fhj.kannstdudas.navigation
  * Created by Noah Dimmer on 12/06/2024
  */
+
+fun NavGraphBuilder.homeNavGraph(
+    navController: NavHostController
+) {
+    navigation<Screen.HomeNav>(
+        startDestination = Screen.Explore,
+    ) {
+        composable<Screen.Explore> { ExploreScreen(navController) }
+        composable<Screen.NewSkill> { NewSkillScreen(navController) }
+        composable<Screen.MySkills> { MySkillsScreen(navController) }
+        composable<Screen.Profile> { ProfileScreen(navController = navController) }
+        composable<Screen.SkillDetail> { SkillDetailScreen() }
+    }
+}
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -48,7 +64,7 @@ fun HomeScreen(
             composable<Screen.Explore> { ExploreScreen(navController) }
             composable<Screen.NewSkill> { NewSkillScreen(navController) }
             composable<Screen.MySkills> { MySkillsScreen(navController) }
-            composable<Screen.Profile> { ProfileScreen() }
+            composable<Screen.Profile> { ProfileScreen(navController = navController) }
             composable<Screen.SkillDetail> { SkillDetailScreen() }
         }
     }
