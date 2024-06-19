@@ -1,4 +1,4 @@
-package at.fhj.kannstdudas.presentation.screen
+package at.fhj.kannstdudas.presentation.screen.home
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween

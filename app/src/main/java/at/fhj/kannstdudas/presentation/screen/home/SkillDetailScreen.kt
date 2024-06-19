@@ -1,4 +1,4 @@
-package at.fhj.kannstdudas.presentation.screen
+package at.fhj.kannstdudas.presentation.screen.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement

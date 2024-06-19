@@ -1,4 +1,4 @@
-package at.fhj.kannstdudas.presentation.screen
+package at.fhj.kannstdudas.presentation.screen.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +32,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.domain.model.Skill
 import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
-import at.fhj.kannstdudas.navigation.Screen
 
 @Composable
 fun ExploreScreen(navController: NavHostController, viewModel: SkillsViewModel = hiltViewModel()) {

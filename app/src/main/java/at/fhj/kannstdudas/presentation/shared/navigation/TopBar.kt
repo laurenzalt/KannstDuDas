@@ -27,7 +27,7 @@ import at.fhj.kannstdudas.navigation.Screen
  */
 
 @Composable
-fun TopBar(navController: NavHostController, screen: String) {
+fun TopBar(navController: NavHostController, screen: String = "Test") {
     TopAppBar(
         title = {
             Text(

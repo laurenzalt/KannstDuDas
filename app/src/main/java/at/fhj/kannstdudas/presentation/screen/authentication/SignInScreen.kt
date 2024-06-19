@@ -37,6 +37,7 @@ import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import at.fhj.kannstdudas.R
+import at.fhj.kannstdudas.navigation.Route
 import at.fhj.kannstdudas.navigation.Screen
 import kotlinx.coroutines.flow.collectLatest
 
@@ -61,9 +62,8 @@ fun SignInScreen(
 
     LaunchedEffect(isSignIn) {
         if (isSignIn) {
-            navController.navigate(Screen.HomeNav) {
-                popUpTo<Screen.HomeNav> { inclusive = true }
-            }
+            navController.popBackStack()
+            navController.navigate(Route.HomeNav)
         }
     }
 

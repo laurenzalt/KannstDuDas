@@ -1,4 +1,4 @@
-package at.fhj.kannstdudas.presentation.screen
+package at.fhj.kannstdudas.presentation.screen.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -26,7 +26,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.domain.model.Category
 import at.fhj.kannstdudas.domain.model.Skill
-import at.fhj.kannstdudas.navigation.Screen
 import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
 import kotlinx.coroutines.launch
 

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import at.fhj.kannstdudas.domain.model.Skill
 import at.fhj.kannstdudas.navigation.RootNavGraph
@@ -23,7 +24,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             KannstDuDasTheme {
-                RootNavGraph(navController = rememberNavController())
+                RootNavGraph(
+                    navController = rememberNavController(),
+                    viewModel = hiltViewModel())
             }
         }
     }

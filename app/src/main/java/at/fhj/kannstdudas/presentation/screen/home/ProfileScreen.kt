@@ -1,11 +1,10 @@
-package at.fhj.kannstdudas.presentation.screen
+package at.fhj.kannstdudas.presentation.screen.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,7 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.R
-import at.fhj.kannstdudas.navigation.Screen
+import at.fhj.kannstdudas.navigation.Route
 import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 
 /**
@@ -54,12 +53,12 @@ fun ProfileScreen(
     viewModel: AuthViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
-    var isUserFetched by rememberSaveable { mutableStateOf(false) }
+    val isSignIn by viewModel.isSignedIn.collectAsState()
 
-    LaunchedEffect(Unit) {
-        if (!isUserFetched) {
-            viewModel.fetchCurrentUser()
-            isUserFetched = true
+    LaunchedEffect(isSignIn) {
+        if (!isSignIn) {
+            navController.popBackStack()
+            navController.navigate(Route.AuthNav)
         }
     }
 
@@ -73,7 +72,7 @@ fun ProfileScreen(
         Greeting(viewModel)
         ProfilePicture(viewModel)
         UserInfo(viewModel)
-        Logout(viewModel, navController)
+        SignOut(viewModel)
     }
 }
 
@@ -153,17 +152,14 @@ fun StyledText(label: String, value: String) {
 }
 
 @Composable
-fun Logout(viewModel: AuthViewModel, navController: NavHostController) {
+fun SignOut(viewModel: AuthViewModel) {
     Button(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
         onClick = {
             viewModel.logoutUser()
-            navController.navigate(Screen.AuthNav) {
-                popUpTo<Screen.AuthNav>{ inclusive  = true }
-            }
-                  },
+        },
     ) {
         Text(stringResource(R.string.profile_logout))
     }
