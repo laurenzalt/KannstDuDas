@@ -62,8 +62,9 @@ fun SignInScreen(
 
     LaunchedEffect(isSignIn) {
         if (isSignIn) {
-            navController.popBackStack()
-            navController.navigate(Route.HomeNav)
+            navController.navigate(Route.HomeNav) {
+                popUpTo(0)
+            }
         }
     }
 

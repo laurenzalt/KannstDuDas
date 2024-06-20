@@ -51,15 +51,18 @@ class AuthViewModel @Inject constructor(
     }
 
     fun setUserEmail(email: String) {
-        _user.value = _user.value?.copy(email = email) ?: User(email = email, username = "", password = "", profilePicture = "")
+        _user.value = _user.value?.copy(email = email)
+            ?: User(email = email, username = "", password = "", profilePicture = "")
     }
 
     fun setUserPassword(password: String) {
-        _user.value = _user.value?.copy(password = password) ?: User(email = "", username = "", password = password, profilePicture = "")
+        _user.value = _user.value?.copy(password = password)
+            ?: User(email = "", username = "", password = password, profilePicture = "")
     }
 
     fun setUsername(username: String) {
-        _user.value = _user.value?.copy(username = username) ?: User(email = "", username = username, password = "", profilePicture = "")
+        _user.value = _user.value?.copy(username = username)
+            ?: User(email = "", username = username, password = "", profilePicture = "")
     }
 
     fun signIn() {
@@ -102,18 +105,6 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun fetchCurrentUser(): String {
-        viewModelScope.launch {
-            try {
-                val currentUser = getCurrentUserUseCase()
-                _user.value = currentUser
-            } catch (e: Exception) {
-                _errorMessage.value = e.message
-            }
-        }
-        return _user.value?.username ?: "User not found"
-    }
-
     fun logoutUser() {
         viewModelScope.launch {
             try {
@@ -124,5 +115,17 @@ class AuthViewModel @Inject constructor(
                 _errorMessage.value = e.message
             }
         }
+    }
+
+    private fun fetchCurrentUser(): String {
+        viewModelScope.launch {
+            try {
+                val currentUser = getCurrentUserUseCase()
+                _user.value = currentUser
+            } catch (e: Exception) {
+                _errorMessage.value = e.message
+            }
+        }
+        return _user.value?.username ?: "User not found"
     }
 }

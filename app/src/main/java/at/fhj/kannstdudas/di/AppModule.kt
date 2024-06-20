@@ -1,7 +1,9 @@
 package at.fhj.kannstdudas.di
 
-import at.fhj.kannstdudas.data.datasource.FirebaseUserDataSource
+import at.fhj.kannstdudas.data.datasource.FirestoreUserDataSource
+import at.fhj.kannstdudas.data.datasource.FirestoreSkillDataSource
 import at.fhj.kannstdudas.data.repository.UserRepository
+import at.fhj.kannstdudas.domain.datasource.SkillDataSource
 import at.fhj.kannstdudas.domain.datasource.UserDataSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -32,7 +34,13 @@ object AppModule {
     @Singleton
     fun provideUserDataSource(
         firestore: FirebaseFirestore
-    ): UserDataSource = FirebaseUserDataSource(firestore)
+    ): UserDataSource = FirestoreUserDataSource(firestore)
+
+    @Provides
+    @Singleton
+    fun provideSkillDataSource(
+        firestore: FirebaseFirestore
+    ): SkillDataSource = FirestoreSkillDataSource(firestore)
 
     @Provides
     @Singleton

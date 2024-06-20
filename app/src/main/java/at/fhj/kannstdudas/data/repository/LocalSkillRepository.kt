@@ -14,7 +14,7 @@ import javax.inject.Singleton
  */
 
 @Singleton
-class SkillsRepository @Inject constructor() {
+class LocalSkillRepository @Inject constructor() {
     private val _skills = MutableStateFlow<List<Skill>>(emptyList())
     private val _mySkills = MutableStateFlow<List<Skill>>(emptyList())
     private val _subscribedSkills = MutableStateFlow<List<Skill>>(emptyList())

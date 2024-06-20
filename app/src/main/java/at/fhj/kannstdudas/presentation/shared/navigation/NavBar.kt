@@ -35,7 +35,7 @@ fun NavBar(navController: NavHostController) {
                     selectedItem = index
                     navController.navigate(item.screen) },
                 label = { Text(item.screen.label) },
-                icon = { Icon(imageVector = item.icon, contentDescription = null) }
+                icon = { Icon(item.icon, item.screen.label) }
             )
         }
     }
@@ -48,8 +48,8 @@ data class NavigationItem(
 
 object NavigationItemsProvider {
     val items = listOf(
-        NavigationItem(screen = Screen.Explore, icon = Icons.Default.Search),
-        NavigationItem(screen = Screen.NewSkill, icon = Icons.Default.Add),
-        NavigationItem(screen = Screen.MySkills, icon = Icons.Default.Favorite)
+        NavigationItem(Screen.Explore, Icons.Default.Search),
+        NavigationItem(Screen.NewSkill, Icons.Default.Add),
+        NavigationItem(Screen.MySkills, Icons.Default.Favorite)
     )
 }

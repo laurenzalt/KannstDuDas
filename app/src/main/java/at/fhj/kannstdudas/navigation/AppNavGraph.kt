@@ -25,7 +25,7 @@ import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
  */
 
 @Composable
-fun RootNavGraph(
+fun AppNavGraph (
     navController: NavHostController,
     viewModel: AuthViewModel
 ) {

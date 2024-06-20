@@ -4,6 +4,7 @@ package at.fhj.kannstdudas.presentation.shared.navigation
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import at.fhj.kannstdudas.navigation.Screen
+import at.fhj.kannstdudas.navigation.Screen.Explore.label
 
 /**
  * at.fhj.kannstdudas.presentation.shared.topbar
@@ -27,11 +29,16 @@ import at.fhj.kannstdudas.navigation.Screen
  */
 
 @Composable
-fun TopBar(navController: NavHostController, screen: String = "Test") {
+fun TopBar(navController: NavHostController) {
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = currentBackStackEntry?.destination
+    val currentLabel = currentDestination?.route?.let { _ ->
+        label
+    } ?: ""
     TopAppBar(
         title = {
             Text(
-                text = screen,
+                text = currentLabel,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -41,6 +48,7 @@ fun TopBar(navController: NavHostController, screen: String = "Test") {
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = "Profile",
+                    modifier = Modifier.size(24.dp)
                 )
             }
         },

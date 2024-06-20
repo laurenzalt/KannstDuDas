@@ -11,7 +11,7 @@ import javax.inject.Inject
  * Created by Noah Dimmer on 17/06/2024
  */
 
-class FirebaseUserDataSource @Inject constructor(
+class FirestoreUserDataSource @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : UserDataSource {
 
