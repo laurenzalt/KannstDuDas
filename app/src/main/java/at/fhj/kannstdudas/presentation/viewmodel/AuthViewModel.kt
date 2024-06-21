@@ -1,7 +1,9 @@
 package at.fhj.kannstdudas.presentation.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.fhj.kannstdudas.data.repository.UserRepository
 import at.fhj.kannstdudas.domain.User
 import at.fhj.kannstdudas.domain.usecase.CheckAuthStatusUseCase
 import at.fhj.kannstdudas.domain.usecase.GetCurrentUserUseCase
@@ -27,7 +29,8 @@ class AuthViewModel @Inject constructor(
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val signOutUseCase: SignOutUseCase,
-    private  val checkAuthStatusUseCase: CheckAuthStatusUseCase
+    private  val checkAuthStatusUseCase: CheckAuthStatusUseCase,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _isSignedIn = MutableStateFlow(false)
@@ -117,7 +120,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private fun fetchCurrentUser(): String {
+    private fun fetchCurrentUser() {
         viewModelScope.launch {
             try {
                 val currentUser = getCurrentUserUseCase()
@@ -126,6 +129,17 @@ class AuthViewModel @Inject constructor(
                 _errorMessage.value = e.message
             }
         }
-        return _user.value?.username ?: "User not found"
+    }
+
+    fun uploadProfilePicture(uri: Uri) {
+        viewModelScope.launch {
+            try {
+                val url = userRepository.uploadProfilePicture(uri)
+                userRepository.uploadProfilePicture(url)
+                fetchCurrentUser()
+            } catch (e: Exception) {
+                _errorMessage.value = e.message
+            }
+        }
     }
 }

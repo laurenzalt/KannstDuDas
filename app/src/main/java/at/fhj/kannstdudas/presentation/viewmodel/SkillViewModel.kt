@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import at.fhj.kannstdudas.data.repository.FirestoreSkillRepository
 import at.fhj.kannstdudas.domain.model.Skill
 import com.google.firebase.firestore.FirebaseFirestoreException
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -13,6 +14,7 @@ import javax.inject.Inject
  * Created by Noah Dimmer on 20/06/2024
  */
 
+@HiltViewModel
 class SkillViewModel @Inject constructor(
     private val skillRepository: FirestoreSkillRepository
 ): ViewModel() {
@@ -24,7 +26,6 @@ class SkillViewModel @Inject constructor(
             } catch (e: FirebaseFirestoreException) {
                 println(e)
             }
-
         }
     }
 

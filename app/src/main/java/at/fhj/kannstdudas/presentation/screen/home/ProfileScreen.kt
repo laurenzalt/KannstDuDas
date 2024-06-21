@@ -1,5 +1,10 @@
 package at.fhj.kannstdudas.presentation.screen.home
 
+import android.content.ContentValues.TAG
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -22,14 +27,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -43,6 +47,10 @@ import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.R
 import at.fhj.kannstdudas.navigation.Route
 import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
+import coil.compose.rememberAsyncImagePainter
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 
 /**
  * at.fhj.kannstdudas.presentation.screen
@@ -89,16 +97,34 @@ fun Greeting(viewModel: AuthViewModel) {
     )
 }
 
+
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ProfilePicture(viewModel: AuthViewModel) {
     val user by viewModel.user.collectAsState()
+    val context = LocalContext.current
+    val permissionState = rememberPermissionState(android.Manifest.permission.READ_EXTERNAL_STORAGE)
 
     val painter = if (user?.profilePicture?.isNotEmpty() == true) {
-        // Use the user’s profile picture from the URL (placeholder here)
-        painterResource(id = R.drawable.test_profile_icon)
+        rememberAsyncImagePainter(user!!.profilePicture)
     } else {
         painterResource(id = R.drawable.test_profile_icon)
     }
+
+    var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+
+    LaunchedEffect(permissionState.status) {
+        if (permissionState.status.isGranted && selectedImageUri != null) {
+            viewModel.uploadProfilePicture(selectedImageUri!!)
+        }
+    }
+
+    val pickImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri: Uri? ->
+            uri?.let { selectedImageUri = it }
+        }
+    )
 
     Box(
         contentAlignment = Alignment.Center,
@@ -115,7 +141,22 @@ fun ProfilePicture(viewModel: AuthViewModel) {
                 .clip(CircleShape)
                 .border(2.dp, Color.Gray, CircleShape)
         )
+        Button(
+            onClick = {
+                if (permissionState.status.isGranted) {
+                    pickImageLauncher.launch("image/*")
+                } else {
+                    permissionState.launchPermissionRequest()
+                }
+            },
+            modifier = Modifier.align(Alignment.BottomEnd)
+        ) {
+            Text("Upload")
+        }
     }
+
+    Log.d(TAG, "Selected image URI: $selectedImageUri")
+    Log.d(TAG, "Permission state: ${permissionState.status}")
 }
 
 @Composable

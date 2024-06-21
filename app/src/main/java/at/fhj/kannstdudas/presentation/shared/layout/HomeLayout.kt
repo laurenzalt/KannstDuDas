@@ -22,7 +22,7 @@ fun HomeLayout(
 ) {
     Scaffold(
         topBar = { TopBar(navController) },
-        bottomBar = { NavBar(navController) },
+        bottomBar = { NavBar(navController) }
     ) { innerPadding ->
         Column(
             modifier = Modifier

@@ -35,6 +35,7 @@ fun TopBar(navController: NavHostController) {
     val currentLabel = currentDestination?.route?.let { _ ->
         label
     } ?: ""
+
     TopAppBar(
         title = {
             Text(

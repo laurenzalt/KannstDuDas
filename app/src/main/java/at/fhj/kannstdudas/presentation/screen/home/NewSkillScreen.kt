@@ -26,8 +26,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.domain.model.Category
 import at.fhj.kannstdudas.domain.model.Skill
+import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
 import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 /**
  * at.fhj.kannstdudas.presentation.screen
@@ -36,7 +38,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewSkillScreen(navController: NavHostController, viewModel: SkillsViewModel = hiltViewModel()) {
+fun NewSkillScreen(navController: NavHostController, viewModel: SkillViewModel = hiltViewModel()) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var isExpanded by remember { mutableStateOf(false) }
@@ -45,7 +47,6 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillsViewModel 
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
@@ -164,21 +165,19 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillsViewModel 
             Button(
                 onClick = {
                     if (title.isNotEmpty() && description.isNotEmpty()) {
-                        viewModel.addSkill(Skill("", title, description, category))
+                        val newSkill = Skill(UUID.randomUUID().toString(), title, description, category)
                         coroutineScope.launch {
+                            viewModel.saveSkill(newSkill)
                             snackbarHostState.showSnackbar(
                                 message = "Skill added successfully!",
                                 duration = SnackbarDuration.Short
                             )
-
                         }
-                        // just for now
                         title = ""
                         category = Category.Programming
                         description = ""
                         keyboardController?.hide()
                         focusManager.clearFocus()
-                        // navController.navigate(Screen.Explore)
                     }
                 },
                 modifier = Modifier.align(Alignment.End)

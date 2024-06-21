@@ -1,5 +1,6 @@
 package at.fhj.kannstdudas.data.repository
 
+import android.net.Uri
 import at.fhj.kannstdudas.domain.User
 import at.fhj.kannstdudas.domain.datasource.UserDataSource
 import com.google.firebase.auth.FirebaseAuth
@@ -41,5 +42,17 @@ class UserRepository @Inject constructor(
     suspend fun getCurrentUser(): User? {
         val uid = firebaseAuth.currentUser?.uid
         return uid?.let { userDataSource.getUser(it) }
+    }
+
+    suspend fun uploadProfilePicture(uri: Uri): Uri {
+        val uid = firebaseAuth.currentUser?.uid ?: throw Exception("User not authenticated")
+        return userDataSource.saveProfilePicture(uri, uid)
+    }
+
+    suspend fun updateProfilePictureUrl(url: String) {
+        val uid = firebaseAuth.currentUser?.uid ?: throw Exception("User not authenticated")
+        val user = userDataSource.getUser(uid) ?: throw Exception("User not found")
+        val updatedUser = user.copy(profilePicture = url)
+        userDataSource.saveUser(updatedUser)
     }
 }

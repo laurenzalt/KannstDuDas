@@ -1,5 +1,6 @@
 package at.fhj.kannstdudas.domain.datasource
 
+import android.net.Uri
 import at.fhj.kannstdudas.domain.User
 
 /**
@@ -10,4 +11,6 @@ import at.fhj.kannstdudas.domain.User
 interface UserDataSource {
     suspend fun saveUser(user: User)
     suspend fun getUser(uid: String): User?
+    suspend fun saveProfilePicture(uri: Uri, uid: String): Uri
+    suspend fun getProfilePicture(url: String): ByteArray
 }

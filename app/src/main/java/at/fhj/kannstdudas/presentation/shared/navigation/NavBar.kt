@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
@@ -24,7 +24,7 @@ import at.fhj.kannstdudas.navigation.Screen
 
 @Composable
 fun NavBar(navController: NavHostController) {
-    var selectedItem by remember { mutableIntStateOf(0) }
+    var selectedItem by rememberSaveable { mutableIntStateOf(0) }
     val items = NavigationItemsProvider.items
 
     NavigationBar {
@@ -33,7 +33,8 @@ fun NavBar(navController: NavHostController) {
                 selected = selectedItem == index,
                 onClick = {
                     selectedItem = index
-                    navController.navigate(item.screen) },
+                    navController.navigate(item.screen)
+                },
                 label = { Text(item.screen.label) },
                 icon = { Icon(item.icon, item.screen.label) }
             )

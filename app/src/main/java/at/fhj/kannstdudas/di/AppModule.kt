@@ -2,11 +2,13 @@ package at.fhj.kannstdudas.di
 
 import at.fhj.kannstdudas.data.datasource.FirestoreUserDataSource
 import at.fhj.kannstdudas.data.datasource.FirestoreSkillDataSource
+import at.fhj.kannstdudas.data.repository.FirestoreSkillRepository
 import at.fhj.kannstdudas.data.repository.UserRepository
 import at.fhj.kannstdudas.domain.datasource.SkillDataSource
 import at.fhj.kannstdudas.domain.datasource.UserDataSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,9 +34,16 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideFirebaseStorage(): FirebaseStorage {
+        return FirebaseStorage.getInstance()
+    }
+
+    @Provides
+    @Singleton
     fun provideUserDataSource(
-        firestore: FirebaseFirestore
-    ): UserDataSource = FirestoreUserDataSource(firestore)
+        firestore: FirebaseFirestore,
+        storage: FirebaseStorage
+    ): UserDataSource = FirestoreUserDataSource(firestore, storage)
 
     @Provides
     @Singleton
