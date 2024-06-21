@@ -1,4 +1,4 @@
-package at.fhj.kannstdudas.presentation.screen
+package at.fhj.kannstdudas.presentation.screen.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -29,7 +29,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.domain.model.Category
 import at.fhj.kannstdudas.domain.model.Skill
-import at.fhj.kannstdudas.navigation.Screen
+import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
+import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
 import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -42,7 +43,7 @@ import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewSkillScreen(navController: NavHostController, viewModel: SkillsViewModel = hiltViewModel()) {
+fun NewSkillScreen(navController: NavHostController, viewModel: SkillViewModel = hiltViewModel(), userViewModel: AuthViewModel = hiltViewModel(),) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var isExpanded by remember { mutableStateOf(false) }
@@ -51,6 +52,7 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillsViewModel 
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+    val user by userViewModel.user.collectAsState()
 
     Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }) { padding ->
         Column(
@@ -68,12 +70,16 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillsViewModel 
             })
             DescriptionInput(description) { newDescription -> description = newDescription }
             // CreateButton(title, description, category, viewModel, snackbarHostState, coroutineScope, focusManager, keyboardController)
+
             Button(
                 onClick = {
                     if (title.isNotEmpty() && description.isNotEmpty()) {
-                        var skill = Skill(UUID.randomUUID().toString(), title, description, category)
-                        viewModel.addSkill(skill)
-                        viewModel.addMySkills(skill)
+
+                        var skill = user?.let { Skill(UUID.randomUUID().toString(), title, description, category, it.uid) }
+                        if (skill != null) {
+                            viewModel.saveSkill(skill)
+                        }
+                        // viewModel.addMySkills(skill)
                         coroutineScope.launch {
                             snackbarHostState.showSnackbar(
                                 message = "Skill added successfully!",
@@ -148,4 +154,28 @@ fun DescriptionInput(description: String, onDescriptionChange: (String) -> Unit)
         maxLines = 20,
         textStyle = LocalTextStyle.current.copy(lineHeight = 20.sp)
     )
+}
+
+@Composable
+fun CreateButton(title: String, description: String, category: Category, viewModel: SkillsViewModel,
+                 snackbarHostState: SnackbarHostState, coroutineScope: CoroutineScope,
+                 focusManager: FocusManager, keyboardController: SoftwareKeyboardController?) {
+    Button(
+        onClick = {
+            if (title.isNotEmpty() && description.isNotEmpty()) {
+                viewModel.addSkill(Skill("", title, description, category))
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = "Skill added successfully!",
+                        duration = SnackbarDuration.Short
+                    )
+                }
+                keyboardController?.hide()
+                focusManager.clearFocus()
+            }
+        },
+        // modifier = Modifier.align(Alignment.End)
+    ) {
+        Text("Create")
+    }
 }

@@ -10,9 +10,9 @@ import at.fhj.kannstdudas.domain.model.Category
 
 data class Skill(
     val id: String = "",
-    val name: String,
-    val description: String,
-    val category: Category,
+    val name: String = "",
+    val description: String = "",
+    val category: Category = Category.Art,
     val userId: String = ""
 
 ) {

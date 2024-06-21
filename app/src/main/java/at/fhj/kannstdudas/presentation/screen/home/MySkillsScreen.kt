@@ -35,6 +35,7 @@ import androidx.compose.runtime.collectAsState
  * Created by Noah Dimmer on 13/06/2024
  */
 
+// TODO: Switch to SkillViewModel
 @Composable
 fun MySkillsScreen(navController: NavHostController, viewModel: SkillsViewModel = hiltViewModel()) {
     var showSubscribedSkills by remember { mutableStateOf(false) }  // Toggle state for showing subscribed skills

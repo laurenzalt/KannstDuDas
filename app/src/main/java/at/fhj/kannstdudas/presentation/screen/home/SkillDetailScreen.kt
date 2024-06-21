@@ -14,13 +14,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.domain.model.Skill
-import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
+import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
 
 /**
  * at.fhj.kannstdudas.presentation.screen
@@ -28,10 +33,15 @@ import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
  */
 
 @Composable
-fun SkillDetailScreen(skillId: String, navController: NavHostController, viewModel: SkillsViewModel = hiltViewModel()) {
-    val skill = viewModel.getSkillById(skillId)
-    val isMySkill = skill?.let { viewModel.isMySkill(it.id) } ?: false
-    val isSubscribed = skill?.let { viewModel.isSubscribedSkill(it.id) } ?: false
+fun SkillDetailScreen(skillId: String, navController: NavHostController, viewModel: SkillViewModel = hiltViewModel()) {
+    var skill by remember { mutableStateOf<Skill?>(null) }
+    var isMySkill by remember { mutableStateOf(false) }
+    var isSubscribed by remember { mutableStateOf(false) }
+
+    LaunchedEffect(skillId) {
+        skill = viewModel.getSkill(skillId)
+        isMySkill = viewModel.isMySkill(skillId)
+    }
 
     Scaffold { innerPadding ->
         Column(
@@ -42,18 +52,25 @@ fun SkillDetailScreen(skillId: String, navController: NavHostController, viewMod
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            skill?.let {
-                Text(
-                    text = it.name,
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
-                SkillDescription(it)
+            skill.let {
+                if (it != null) {
+                    Text(
+                        text = it.name,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
+                if (it != null) {
+                    SkillDescription(it)
+                }
                 if (isMySkill) {
-                    SkillManagementButtons(it, viewModel, navController)
+                    if (it != null) {
+                        SkillManagementButtons(it, viewModel, navController)
+                    }
                 } else {
-                    SubscriptionButton(it, isSubscribed, viewModel)
+                    // TODO(not yet implemented)
+                    // SubscriptionButton(it, isSubscribed, viewModel)
                 }
             } ?: Text("Skill not found", style = MaterialTheme.typography.bodyLarge)
         }
@@ -61,10 +78,10 @@ fun SkillDetailScreen(skillId: String, navController: NavHostController, viewMod
 }
 
 @Composable
-fun SkillManagementButtons(skill: Skill, viewModel: SkillsViewModel, navController: NavHostController) {
+fun SkillManagementButtons(skill: Skill, viewModel: SkillViewModel, navController: NavHostController) {
     Column {
         Button(
-            onClick = { viewModel.deleteSkill(skill) },
+            onClick = { viewModel.deleteSkill(skill.id) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp)
@@ -84,24 +101,24 @@ fun SkillManagementButtons(skill: Skill, viewModel: SkillsViewModel, navControll
     }
 }
 
-@Composable
-fun SubscriptionButton(skill: Skill, isSubscribed: Boolean, viewModel: SkillsViewModel) {
-    Button(
-        onClick = {
-            if (isSubscribed) {
-                viewModel.unsubscribeSkill(skill)
-            } else {
-                viewModel.addSubscribedSkill(skill)
-            }
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
-    ) {
-        Text(if (isSubscribed) "Unsubscribe" else "Add to skills")
-    }
-}
-
+//@Composable
+//fun SubscriptionButton(skill: Skill, isSubscribed: Boolean, viewModel: SkillViewModel) {
+//    Button(
+//        onClick = {
+//            if (isSubscribed) {
+//                viewModel.unsubscribeSkill(skill)
+//            } else {
+//                viewModel.addSubscribedSkill(skill)
+//            }
+//        },
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(top = 16.dp)
+//    ) {
+//        Text(if (isSubscribed) "Unsubscribe" else "Add to skills")
+//    }
+//}
+//
 @Composable
 fun SkillDescription(skill: Skill) {
     Card(
