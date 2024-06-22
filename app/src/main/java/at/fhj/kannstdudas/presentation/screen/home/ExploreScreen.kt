@@ -20,62 +20,83 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.domain.model.Skill
+import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
 import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
+import kotlinx.coroutines.launch
 
 @Composable
-fun ExploreScreen(navController: NavHostController, viewModel: SkillsViewModel = hiltViewModel()) {
-    val filteredSkills = viewModel.filteredSkills.collectAsState(initial = listOf()).value
+fun ExploreScreen(navController: NavHostController, viewModel: SkillViewModel = hiltViewModel()) {
+    val scope = rememberCoroutineScope()
+    val skills = viewModel.skills.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val userMessage by viewModel.userMessage.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Box {
-        Scaffold(
-            topBar = {
-                TextField(
-                    value = searchQuery,
-                    onValueChange = {
-                        searchQuery = it
-                        viewModel.setSearchQuery(it)
-                    },
-                    label = { Text("Search Skills") },
-                    singleLine = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = {
-                        keyboardController?.hide()
-                    })
-                )
-            }
-        ) { padding ->
-            SkillList(filteredSkills, padding, onSkillClick = { skill ->
-                navController.navigate("SkillDetail/${skill.id}")
-            })
+    // val filteredSkills = viewModel.filteredSkills.collectAsState(initial = listOf()).value
+    // val keyboardController = LocalSoftwareKeyboardController.current
+
+    // doesnt work
+    LaunchedEffect(userMessage) {
+        if (userMessage.isNotEmpty()) {
+            snackbarHostState.showSnackbar(userMessage)
+            viewModel.clearDeletionMessage()
         }
+    }
+
+    Scaffold(
+        topBar = {
+            SearchBar(searchQuery, onQueryChanged = {
+                searchQuery = it
+            }, onDone = { keyboardController?.hide() })
+        }
+    ) { padding ->
+        SkillList(skills = skills.value, padding, onSkillClick = { skill ->
+            navController.navigate("SkillDetail/${skill.id}")
+        })
     }
 }
 
 @Composable
-fun SkillList(skills: List<Skill>, padding: PaddingValues, onSkillClick: (Skill) -> Unit) {
+fun SearchBar(query: String, onQueryChanged: (String) -> Unit, onDone: () -> Unit) {
+    TextField(
+        value = query,
+        onValueChange = onQueryChanged,
+        label = { Text("Search Skills") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { onDone() })
+    )
+}
+
+@Composable
+fun SkillList(skills: List<Skill?>, padding: PaddingValues, onSkillClick: (Skill) -> Unit) {
     LazyColumn(
         contentPadding = padding,
         verticalArrangement = Arrangement.spacedBy(6.dp),
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         items(skills) { skill ->
-            SkillCard(skill, onSkillClick)
+            skill?.let { safeSkill ->
+                SkillCard(safeSkill, onSkillClick)
+            }
         }
     }
 }

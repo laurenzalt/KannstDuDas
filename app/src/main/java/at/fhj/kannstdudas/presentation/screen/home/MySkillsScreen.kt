@@ -29,81 +29,61 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.collectAsState
+import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
 
 /**
  * at.fhj.kannstdudas.presentation.screen
  * Created by Noah Dimmer on 13/06/2024
  */
 
+// TODO: Switch to SkillViewModel
 @Composable
-fun MySkillsScreen(navController: NavHostController, viewModel: SkillsViewModel = hiltViewModel()) {
-    var showMySkills by remember { mutableStateOf(false) }
+fun MySkillsScreen(navController: NavHostController, viewModel: SkillViewModel = hiltViewModel()) {
+    var showSubscribedSkills by remember { mutableStateOf(false) }  // Toggle state for showing subscribed skills
 
-    Box {
-        Scaffold { padding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Top
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                ) {
-                    // TODO: center and just show one of the texts
-                    Text("My Skills", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(end = 16.dp))
-                    Switch(
-                        checked = showMySkills,
-                        onCheckedChange = { showMySkills = it }
-                    )
-                    Text("Subscribed Skills", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(start = 16.dp))
-                }
+    Scaffold { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            verticalArrangement = Arrangement.Top
+        ) {
+            ToggleButton(showSubscribedSkills, onToggleChanged = { showSubscribedSkills = it })
 
-                AnimatedContent(
-                    targetState = showMySkills,
-                    transitionSpec = {
-                        if (!targetState) {
-                            (slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween(500)) + fadeIn(animationSpec = tween(500))).togetherWith(
-                                slideOutHorizontally(
-                                    targetOffsetX = { -1000 },
-                                    animationSpec = tween(500)
-                                ) + fadeOut(animationSpec = tween(500))
-                            )
-                        } else {
-                            (slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween(500)) + fadeIn(animationSpec = tween(500))).togetherWith(
-                                slideOutHorizontally(
-                                    targetOffsetX = { 1000 },
-                                    animationSpec = tween(500)
-                                ) + fadeOut(animationSpec = tween(500))
-                            )
-                        }
-                    }, label = ""
-                ) { displayMySkills ->
-                    if (!displayMySkills) {
-                        MySkillList(skills = viewModel.mySkills.collectAsState().value, padding, onSkillClick = {
-                            // TODO: make this work with specific Skill
-                            navController.navigate(Screen.SkillDetail)
-                        })
-                    } else {
-                        MySkillList(skills = viewModel.subscribedSkills.collectAsState().value, padding, onSkillClick = {
-                            // TODO: make this work with specific Skill
-                            navController.navigate(Screen.SkillDetail)
-                        })
-                    }
-                }
+            if (showSubscribedSkills) {
+//                SkillList(skills = viewModel., padding, onSkillClick = { skill ->
+//                    navController.navigate("SkillDetail/${skill.id}")
+//                })
+            } else {
+//                SkillList(skills = viewModel.getSkillsByUser(), padding, onSkillClick = { skill ->
+//                    navController.navigate("SkillDetail/${skill.id}")
+//                })
             }
         }
     }
-
 }
 
 @Composable
-fun MySkillList(skills: List<Skill>, padding: PaddingValues, onSkillClick: (Skill) -> Unit) {
+fun ToggleButton(showSubscribedSkills: Boolean, onToggleChanged: (Boolean) -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Text("My Skills", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(end = 16.dp))
+        Switch(
+            checked = showSubscribedSkills,
+            onCheckedChange = onToggleChanged
+        )
+        Text("Subscribed Skills", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(start = 16.dp))
+    }
+}
+
+@Composable
+fun MySkillList(skills: List<Skill>, onSkillClick: (Skill) -> Unit) {
     LazyColumn(
-        contentPadding = padding,
         verticalArrangement = Arrangement.spacedBy(6.dp),
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
@@ -116,9 +96,7 @@ fun MySkillList(skills: List<Skill>, padding: PaddingValues, onSkillClick: (Skil
 @Composable
 fun MySkillCard(skill: Skill, onSkillClick: (Skill) -> Unit) {
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = skill.color
-        ),
+        colors = CardDefaults.cardColors(containerColor = skill.color),
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onSkillClick(skill) },
@@ -139,3 +117,4 @@ fun MySkillCard(skill: Skill, onSkillClick: (Skill) -> Unit) {
         }
     }
 }
+

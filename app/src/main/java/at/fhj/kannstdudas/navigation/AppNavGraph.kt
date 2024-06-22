@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import at.fhj.kannstdudas.presentation.screen.home.EditSkillScreen
 import at.fhj.kannstdudas.presentation.screen.home.ExploreScreen
 import at.fhj.kannstdudas.presentation.screen.home.MySkillsScreen
 import at.fhj.kannstdudas.presentation.screen.home.NewSkillScreen
@@ -65,5 +66,15 @@ fun NavGraphBuilder.homeNavGraph(
         composable<Screen.NewSkill> { HomeLayout(navController) { NewSkillScreen(navController) } }
         composable<Screen.MySkills> { HomeLayout(navController) { MySkillsScreen(navController) } }
         composable<Screen.SkillDetail> { HomeLayout(navController) { SkillDetailScreen("", navController) } }
+
+        // with IDs
+        composable("SkillDetail/{skillId}") { backStackEntry ->
+            val skillId = backStackEntry.arguments?.getString("skillId") ?: ""
+            HomeLayout(navController) { SkillDetailScreen(skillId, navController) }
+        }
+        composable("EditSkill/{skillId}") { backStackEntry ->
+            val skillId = backStackEntry.arguments?.getString("skillId") ?: ""
+            HomeLayout(navController) { EditSkillScreen(skillId, navController) }
+        }
     }
 }

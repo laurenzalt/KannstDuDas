@@ -18,16 +18,21 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.domain.model.Category
 import at.fhj.kannstdudas.domain.model.Skill
+import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
 import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -38,7 +43,7 @@ import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewSkillScreen(navController: NavHostController, viewModel: SkillViewModel = hiltViewModel()) {
+fun NewSkillScreen(navController: NavHostController, viewModel: SkillViewModel = hiltViewModel(), userViewModel: AuthViewModel = hiltViewModel(),) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var isExpanded by remember { mutableStateOf(false) }
@@ -47,135 +52,43 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillViewModel =
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+    val user by userViewModel.user.collectAsState()
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
-    ) { padding ->
+    Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }) { padding ->
         Column(
-            modifier = Modifier
-                .padding(padding)
-                .padding(16.dp)
-                .fillMaxWidth(),
+            modifier = Modifier.padding(padding).padding(16.dp).fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            OutlinedTextField(
-                value = title,
-                onValueChange = {
-                    if (it.length <= 28) title = it
-                },
-                label = { Text("Title") },
-                singleLine = true,
-                trailingIcon = {
-                    Text("${title.length}/28", style = MaterialTheme.typography.bodySmall)
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-            ExposedDropdownMenuBox(
-                expanded = isExpanded,
-                onExpandedChange = { isExpanded = it },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                TextField(
-                    value = category.name,
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
-                )
-                ExposedDropdownMenu(
-                    expanded = isExpanded,
-                    onDismissRequest = { isExpanded = false },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(text = "Programming") },
-                        onClick = {
-                            category = Category.Programming
-                            isExpanded = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = "Sports") },
-                        onClick = {
-                            category = Category.Sports
-                            isExpanded = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = "Finance") },
-                        onClick = {
-                            category = Category.Finance
-                            isExpanded = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = "Art") },
-                        onClick = {
-                            category = Category.Art
-                            isExpanded = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = "Music") },
-                        onClick = {
-                            category = Category.Music
-                            isExpanded = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = "Languages") },
-                        onClick = {
-                            category = Category.Languages
-                            isExpanded = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = "Health") },
-                        onClick = {
-                            category = Category.Health
-                            isExpanded = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = "Fitness") },
-                        onClick = {
-                            category = Category.Fitness
-                            isExpanded = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = "Other") },
-                        onClick = {
-                            category = Category.Other
-                            isExpanded = false
-                        }
-                    )
-                }
+            TitleInput(title) { newTitle ->
+                if (newTitle.length <= 28) title = newTitle
             }
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("Description") },
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 20,
-                textStyle = LocalTextStyle.current.copy(lineHeight = 20.sp)
-            )
+            CategorySelector(isExpanded, category, { newCategory, newIsExpanded ->
+                category = newCategory
+                isExpanded = newIsExpanded
+            }, { newIsExpanded ->
+                isExpanded = newIsExpanded
+            })
+            DescriptionInput(description) { newDescription -> description = newDescription }
+            // CreateButton(title, description, category, viewModel, snackbarHostState, coroutineScope, focusManager, keyboardController)
+
             Button(
                 onClick = {
                     if (title.isNotEmpty() && description.isNotEmpty()) {
-                        val newSkill = Skill(UUID.randomUUID().toString(), title, description, category)
+
+                        var skill = user?.let { Skill(UUID.randomUUID().toString(), title, description, category, it.uid) }
+                        if (skill != null) {
+                            viewModel.saveSkill(skill)
+                        }
+                        // viewModel.addMySkills(skill)
                         coroutineScope.launch {
-                            viewModel.saveSkill(newSkill)
                             snackbarHostState.showSnackbar(
                                 message = "Skill added successfully!",
                                 duration = SnackbarDuration.Short
                             )
                         }
                         title = ""
-                        category = Category.Programming
                         description = ""
+                        category = Category.Programming
                         keyboardController?.hide()
                         focusManager.clearFocus()
                     }
@@ -185,5 +98,84 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillViewModel =
                 Text("Create")
             }
         }
+    }
+}
+
+
+@Composable
+fun TitleInput(title: String, onTitleChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = title,
+        onValueChange = onTitleChange,
+        label = { Text("Title") },
+        singleLine = true,
+        trailingIcon = { Text("${title.length}/28", style = MaterialTheme.typography.bodySmall) },
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CategorySelector(isExpanded: Boolean, category: Category, onCategoryChange: (Category, Boolean) -> Unit, setIsExpanded: (Boolean) -> Unit) {
+    ExposedDropdownMenuBox(
+        expanded = isExpanded,
+        onExpandedChange = setIsExpanded,  // Use the passed setter function
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        TextField(
+            value = category.name,
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
+            modifier = Modifier.menuAnchor().fillMaxWidth()
+        )
+        ExposedDropdownMenu(
+            expanded = isExpanded,
+            onDismissRequest = { onCategoryChange(category, false) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Category.values().forEach { categoryItem ->
+                DropdownMenuItem(
+                    text = { Text(text = categoryItem.name) },
+                    onClick = { onCategoryChange(categoryItem, false) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun DescriptionInput(description: String, onDescriptionChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = description,
+        onValueChange = onDescriptionChange,
+        label = { Text("Description") },
+        modifier = Modifier.fillMaxWidth(),
+        maxLines = 20,
+        textStyle = LocalTextStyle.current.copy(lineHeight = 20.sp)
+    )
+}
+
+@Composable
+fun CreateButton(title: String, description: String, category: Category, viewModel: SkillsViewModel,
+                 snackbarHostState: SnackbarHostState, coroutineScope: CoroutineScope,
+                 focusManager: FocusManager, keyboardController: SoftwareKeyboardController?) {
+    Button(
+        onClick = {
+            if (title.isNotEmpty() && description.isNotEmpty()) {
+                viewModel.addSkill(Skill("", title, description, category))
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = "Skill added successfully!",
+                        duration = SnackbarDuration.Short
+                    )
+                }
+                keyboardController?.hide()
+                focusManager.clearFocus()
+            }
+        },
+        // modifier = Modifier.align(Alignment.End)
+    ) {
+        Text("Create")
     }
 }

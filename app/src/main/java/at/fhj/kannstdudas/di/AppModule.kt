@@ -53,6 +53,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideSkillRepository(
+        skillDataSource: SkillDataSource
+    ): FirestoreSkillRepository = FirestoreSkillRepository(skillDataSource)
+
+    @Provides
+    @Singleton
     fun provideUserRepository(
         firebaseAuth: FirebaseAuth,
         userDataSource: UserDataSource

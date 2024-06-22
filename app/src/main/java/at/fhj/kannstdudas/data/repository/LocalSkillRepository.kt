@@ -42,41 +42,17 @@ class LocalSkillRepository @Inject constructor() {
             Skill(UUID.randomUUID().toString(), "Digital Art", "Create art using digital tools and software.", Category.Art),
             Skill(UUID.randomUUID().toString(), "Guitar Lessons", "Beginner to advanced guitar lessons.", Category.Music),
             Skill(UUID.randomUUID().toString(), "Spanish for Beginners", "Start learning Spanish today!", Category.Languages),
-            Skill(UUID.randomUUID().toString(), "Yoga for Beginners", "Learn the basics of yoga for health and relaxation.", Category.Fitness)
+            Skill(UUID.randomUUID().toString(), "Yoga for Beginners", "Learn the basics of yoga for health and relaxation.", Category.Fitness),
+            Skill("Subscribed Skills", "Subscribed Skills", "Learn the basics of playing soccer.", Category.Sports),
+            Skill("MySkill", "This are my Skills", "Learn the basics of playing soccer.", Category.Sports)
         )
 
         _mySkills.value = listOf(
-            Skill(UUID.randomUUID().toString(), "This are my Skills", "Learn the basics of playing soccer.", Category.Sports),
-            Skill(UUID.randomUUID().toString(), "C# Beginner Course", "Dive into the fascinating world of programming.", Category.Programming),
-            Skill(UUID.randomUUID().toString(), "Stock Market Tips", "Learn how to succeed in the stock market.", Category.Finance),
-            Skill(UUID.randomUUID().toString(), "Painting", "From basics to advanced techniques.", Category.Art),
-            Skill(UUID.randomUUID().toString(), "Music Theory", "Learn to play an instrument or understand music theory.", Category.Music),
-            Skill(UUID.randomUUID().toString(), "English Language & Literature", "Improve your English skills.", Category.Languages),
-            Skill(UUID.randomUUID().toString(), "Nutrition Tips", "Learn how to live healthier.", Category.Health),
-            Skill(UUID.randomUUID().toString(), "Basketball", "Explore basketball techniques and training.", Category.Sports),
-            Skill(UUID.randomUUID().toString(), "JavaScript Essentials", "Learn the fundamentals of JavaScript.", Category.Programming),
-            Skill(UUID.randomUUID().toString(), "Investment Strategies", "Understand different approaches to investing.", Category.Finance),
-            Skill(UUID.randomUUID().toString(), "Digital Art", "Create art using digital tools and software.", Category.Art),
-            Skill(UUID.randomUUID().toString(), "Guitar Lessons", "Beginner to advanced guitar lessons.", Category.Music),
-            Skill(UUID.randomUUID().toString(), "Spanish for Beginners", "Start learning Spanish today!", Category.Languages),
-            Skill(UUID.randomUUID().toString(), "Yoga for Beginners", "Learn the basics of yoga for health and relaxation.", Category.Fitness)
+            Skill("MySkill", "This are my Skills", "Learn the basics of playing soccer.", Category.Sports),
         )
 
         _subscribedSkills.value = listOf(
-            Skill(UUID.randomUUID().toString(), "Subscribed Skills", "Learn the basics of playing soccer.", Category.Sports),
-            Skill(UUID.randomUUID().toString(), "C# Beginner Course", "Dive into the fascinating world of programming.", Category.Programming),
-            Skill(UUID.randomUUID().toString(), "Stock Market Tips", "Learn how to succeed in the stock market.", Category.Finance),
-            Skill(UUID.randomUUID().toString(), "Painting", "From basics to advanced techniques.", Category.Art),
-            Skill(UUID.randomUUID().toString(), "Music Theory", "Learn to play an instrument or understand music theory.", Category.Music),
-            Skill(UUID.randomUUID().toString(), "English Language & Literature", "Improve your English skills.", Category.Languages),
-            Skill(UUID.randomUUID().toString(), "Nutrition Tips", "Learn how to live healthier.", Category.Health),
-            Skill(UUID.randomUUID().toString(), "Basketball", "Explore basketball techniques and training.", Category.Sports),
-            Skill(UUID.randomUUID().toString(), "JavaScript Essentials", "Learn the fundamentals of JavaScript.", Category.Programming),
-            Skill(UUID.randomUUID().toString(), "Investment Strategies", "Understand different approaches to investing.", Category.Finance),
-            Skill(UUID.randomUUID().toString(), "Digital Art", "Create art using digital tools and software.", Category.Art),
-            Skill(UUID.randomUUID().toString(), "Guitar Lessons", "Beginner to advanced guitar lessons.", Category.Music),
-            Skill(UUID.randomUUID().toString(), "Spanish for Beginners", "Start learning Spanish today!", Category.Languages),
-            Skill(UUID.randomUUID().toString(), "Yoga for Beginners", "Learn the basics of yoga for health and relaxation.", Category.Fitness)
+            Skill("Subscribed Skills", "Subscribed Skills", "Learn the basics of playing soccer.", Category.Sports),
         )
     }
 
@@ -88,4 +64,34 @@ class LocalSkillRepository @Inject constructor() {
     fun getSkillById(id: String): Skill? {
         return _skills.value.find { it.id == id }
     }
+
+    fun addSubscribedSkill(skill: Skill) {
+        val currentSkills = _subscribedSkills.value.toMutableList()
+        if (!currentSkills.any { it.id == skill.id }) {
+            currentSkills.add(skill)
+            _subscribedSkills.value = currentSkills
+        }
+    }
+
+    fun addMySkills(skill: Skill) {
+        val currentSkills = _mySkills.value.toMutableList()
+        if (!currentSkills.any { it.id == skill.id }) {
+            currentSkills.add(skill)
+            _mySkills.value = currentSkills
+        }
+    }
+
+    fun deleteSkill(skillId: String) {
+        _mySkills.value = _mySkills.value.filter { it.id != skillId }
+        _skills.value = _skills.value.filter { it.id != skillId }
+    }
+
+    fun updateSkill(updatedSkill: Skill) {
+        _mySkills.value = _mySkills.value.map { if (it.id == updatedSkill.id) updatedSkill else it }
+    }
+
+    fun removeSubscribedSkill(skillId: String) {
+        _subscribedSkills.value = _subscribedSkills.value.filter { it.id != skillId }
+    }
+
 }

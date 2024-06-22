@@ -11,7 +11,7 @@ import javax.inject.Inject
  * Created by Noah Dimmer on 20/06/2024
  */
 class FirestoreSkillDataSource @Inject constructor(
-    private val firestore: FirebaseFirestore
+    firestore: FirebaseFirestore
 ) : SkillDataSource {
 
     private val skillCollection = firestore.collection("skills")
@@ -38,6 +38,11 @@ class FirestoreSkillDataSource @Inject constructor(
         return result.toObjects(Skill::class.java)    }
 
     override suspend fun isSubscribedToSkill(userId: String, skillId: String): Boolean {
-        TODO("Not yet implemented")
+        //val doc = subscriptionsCollection.document(userId).get().await()
+        //val subscribedSkills = doc.get("skillIds") as? List<String>
+        //return subscribedSkills?.contains(skillId) ?: false
+        return true
     }
+
+
 }
