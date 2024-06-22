@@ -1,8 +1,6 @@
 package at.fhj.kannstdudas.presentation.screen.home
 
-import android.content.ContentValues.TAG
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -18,9 +16,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.R
+import at.fhj.kannstdudas.domain.User
 import at.fhj.kannstdudas.navigation.Route
 import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 import coil.compose.rememberAsyncImagePainter
@@ -63,6 +64,7 @@ fun ProfileScreen(
     navController: NavHostController
 ) {
     val isSignIn by viewModel.isSignedIn.collectAsState()
+    val user by viewModel.user.collectAsState()
 
     LaunchedEffect(isSignIn) {
         if (!isSignIn) {
@@ -79,16 +81,15 @@ fun ProfileScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Greeting(viewModel)
-        ProfilePicture(viewModel)
-        UserInfo(viewModel)
+        Greeting(user)
+        ProfilePicture(viewModel, user)
+        UserInfo(user)
         SignOut(viewModel)
     }
 }
 
 @Composable
-fun Greeting(viewModel: AuthViewModel) {
-    val user by viewModel.user.collectAsState()
+fun Greeting(user: User?) {
     Text(
         text = "Hello, ${user?.username ?: "Guest"}",
         fontWeight = FontWeight.Bold,
@@ -100,21 +101,15 @@ fun Greeting(viewModel: AuthViewModel) {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ProfilePicture(viewModel: AuthViewModel) {
-    val user by viewModel.user.collectAsState()
-    val context = LocalContext.current
+fun ProfilePicture(viewModel: AuthViewModel, user: User?) {
     val permissionState = rememberPermissionState(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-
-    val painter = if (user?.profilePicture?.isNotEmpty() == true) {
-        rememberAsyncImagePainter(user!!.profilePicture)
-    } else {
-        painterResource(id = R.drawable.test_profile_icon)
-    }
+    val painter = rememberAsyncImagePainter(user?.profilePicture)
 
     var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    var hasPermission by rememberSaveable { mutableStateOf(permissionState.status.isGranted) }
 
-    LaunchedEffect(permissionState.status) {
-        if (permissionState.status.isGranted && selectedImageUri != null) {
+    LaunchedEffect(selectedImageUri, hasPermission) {
+        if (hasPermission && selectedImageUri != null) {
             viewModel.uploadProfilePicture(selectedImageUri!!)
         }
     }
@@ -122,7 +117,14 @@ fun ProfilePicture(viewModel: AuthViewModel) {
     val pickImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri: Uri? ->
-            uri?.let { selectedImageUri = it }
+            if (uri != null) {
+                selectedImageUri = uri
+                if (permissionState.status.isGranted) {
+                    hasPermission = true
+                } else {
+                    permissionState.launchPermissionRequest()
+                }
+            }
         }
     )
 
@@ -151,31 +153,22 @@ fun ProfilePicture(viewModel: AuthViewModel) {
             },
             modifier = Modifier.align(Alignment.BottomEnd)
         ) {
-            Text("Upload")
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = "Edit"
+            )
         }
     }
-
-    Log.d(TAG, "Selected image URI: $selectedImageUri")
-    Log.d(TAG, "Permission state: ${permissionState.status}")
 }
 
 @Composable
-fun UserInfo(viewModel: AuthViewModel) {
-    val user by viewModel.user.collectAsState()
-    val padding = Modifier.padding(8.dp)
-
+fun UserInfo(user: User?) {
     Card(
-        modifier = padding
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
     ) {
-        Column(modifier = padding) {
-            StyledText(label = "Vorname", value = user?.username ?: "Placeholder")
-            Spacer(modifier = Modifier.height(4.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(4.dp))
-            StyledText(label = "Nachname", value = "Namington")
-            Spacer(modifier = Modifier.height(4.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(4.dp))
+        Column(modifier = Modifier.padding(8.dp)) {
             StyledText(label = "Email", value = user?.email ?: "nofirestore@test.com")
         }
     }

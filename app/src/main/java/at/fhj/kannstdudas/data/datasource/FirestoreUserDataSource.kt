@@ -1,6 +1,7 @@
 package at.fhj.kannstdudas.data.datasource
 
 import android.net.Uri
+import android.util.Log
 import at.fhj.kannstdudas.domain.User
 import at.fhj.kannstdudas.domain.datasource.UserDataSource
 import com.google.firebase.firestore.FirebaseFirestore
@@ -36,7 +37,11 @@ class FirestoreUserDataSource @Inject constructor(
     override suspend fun saveProfilePicture(uri: Uri, uid: String): Uri {
         val ref = firebaseStorage.reference.child("profile_pictures/$uid")
         ref.putFile(uri).await()
-        return ref.downloadUrl.await()
+        val downloadUri = ref.downloadUrl.await()
+        val userRef = firestore.collection("users").document(uid)
+        userRef.update("profile_picture", downloadUri.toString()).await()
+
+        return downloadUri
     }
 
     override suspend fun getProfilePicture(url: String): ByteArray {

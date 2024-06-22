@@ -48,11 +48,4 @@ class UserRepository @Inject constructor(
         val uid = firebaseAuth.currentUser?.uid ?: throw Exception("User not authenticated")
         return userDataSource.saveProfilePicture(uri, uid)
     }
-
-    suspend fun updateProfilePictureUrl(url: String) {
-        val uid = firebaseAuth.currentUser?.uid ?: throw Exception("User not authenticated")
-        val user = userDataSource.getUser(uid) ?: throw Exception("User not found")
-        val updatedUser = user.copy(profilePicture = url)
-        userDataSource.saveUser(updatedUser)
-    }
 }
