@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.collectAsState
+import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
 
 /**
  * at.fhj.kannstdudas.presentation.screen
@@ -37,7 +38,7 @@ import androidx.compose.runtime.collectAsState
 
 // TODO: Switch to SkillViewModel
 @Composable
-fun MySkillsScreen(navController: NavHostController, viewModel: SkillsViewModel = hiltViewModel()) {
+fun MySkillsScreen(navController: NavHostController, viewModel: SkillViewModel = hiltViewModel()) {
     var showSubscribedSkills by remember { mutableStateOf(false) }  // Toggle state for showing subscribed skills
 
     Scaffold { padding ->
@@ -50,13 +51,13 @@ fun MySkillsScreen(navController: NavHostController, viewModel: SkillsViewModel 
             ToggleButton(showSubscribedSkills, onToggleChanged = { showSubscribedSkills = it })
 
             if (showSubscribedSkills) {
-                SkillList(skills = viewModel.subscribedSkills.collectAsState().value, padding, onSkillClick = { skill ->
-                    navController.navigate("SkillDetail/${skill.id}")
-                })
+//                SkillList(skills = viewModel., padding, onSkillClick = { skill ->
+//                    navController.navigate("SkillDetail/${skill.id}")
+//                })
             } else {
-                SkillList(skills = viewModel.mySkills.collectAsState().value, padding, onSkillClick = { skill ->
-                    navController.navigate("SkillDetail/${skill.id}")
-                })
+//                SkillList(skills = viewModel.getSkillsByUser(), padding, onSkillClick = { skill ->
+//                    navController.navigate("SkillDetail/${skill.id}")
+//                })
             }
         }
     }

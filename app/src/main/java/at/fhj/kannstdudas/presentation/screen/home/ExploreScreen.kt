@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -40,18 +41,20 @@ import kotlinx.coroutines.launch
 @Composable
 fun ExploreScreen(navController: NavHostController, viewModel: SkillViewModel = hiltViewModel()) {
     val scope = rememberCoroutineScope()
-    val skills = remember { mutableStateOf<List<Skill>>(listOf())}
+    val skills = viewModel.skills.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val userMessage by viewModel.userMessage.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     // val filteredSkills = viewModel.filteredSkills.collectAsState(initial = listOf()).value
     // val keyboardController = LocalSoftwareKeyboardController.current
 
-    // Fetch skills when the screen is first compsoed
-
-    LaunchedEffect(Unit) {
-        scope.launch {
-            skills.value = viewModel.getAllSkills()
+    // doesnt work
+    LaunchedEffect(userMessage) {
+        if (userMessage.isNotEmpty()) {
+            snackbarHostState.showSnackbar(userMessage)
+            viewModel.clearDeletionMessage()
         }
     }
 
@@ -62,7 +65,7 @@ fun ExploreScreen(navController: NavHostController, viewModel: SkillViewModel = 
             }, onDone = { keyboardController?.hide() })
         }
     ) { padding ->
-        SkillList(skills.value.filter { it.name.contains(searchQuery, ignoreCase = true) }, padding, onSkillClick = { skill ->
+        SkillList(skills = skills.value, padding, onSkillClick = { skill ->
             navController.navigate("SkillDetail/${skill.id}")
         })
     }
@@ -84,14 +87,16 @@ fun SearchBar(query: String, onQueryChanged: (String) -> Unit, onDone: () -> Uni
 }
 
 @Composable
-fun SkillList(skills: List<Skill>, padding: PaddingValues, onSkillClick: (Skill) -> Unit) {
+fun SkillList(skills: List<Skill?>, padding: PaddingValues, onSkillClick: (Skill) -> Unit) {
     LazyColumn(
         contentPadding = padding,
         verticalArrangement = Arrangement.spacedBy(6.dp),
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         items(skills) { skill ->
-            SkillCard(skill, onSkillClick)
+            skill?.let { safeSkill ->
+                SkillCard(safeSkill, onSkillClick)
+            }
         }
     }
 }
