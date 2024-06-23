@@ -1,6 +1,6 @@
 package at.fhj.kannstdudas.data.datasource
 
-import at.fhj.kannstdudas.domain.User
+import at.fhj.kannstdudas.domain.model.User
 import at.fhj.kannstdudas.domain.datasource.SkillDataSource
 import at.fhj.kannstdudas.domain.model.Skill
 import com.google.firebase.firestore.FirebaseFirestore
