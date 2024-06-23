@@ -1,8 +1,7 @@
 package at.fhj.kannstdudas.data.datasource
 
 import android.net.Uri
-import android.util.Log
-import at.fhj.kannstdudas.domain.User
+import at.fhj.kannstdudas.domain.model.User
 import at.fhj.kannstdudas.domain.datasource.UserDataSource
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage

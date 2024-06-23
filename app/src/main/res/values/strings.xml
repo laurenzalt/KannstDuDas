@@ -14,4 +14,9 @@
     <string name="forgot_password_title">Forgot password</string>
     <string name="forgot_password_button">Submit</string>
     <string name="profile_logout">Logout</string>
+    <string name="guest">Guest</string>
+    <string name="greeting">Hello, %1$s!</string>
+    <string name="profile_picture_description">Profile Picture</string>
+    <string name="edit">Edit</string>
+    <string name="email">Email</string>
 </resources>

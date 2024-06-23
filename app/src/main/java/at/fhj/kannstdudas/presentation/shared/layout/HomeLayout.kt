@@ -5,13 +5,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.presentation.shared.navigation.NavBar
 import at.fhj.kannstdudas.presentation.shared.navigation.TopBar
+import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 import at.fhj.kannstdudas.presentation.viewmodel.NavigationViewModel
 
 /**
@@ -22,12 +20,13 @@ import at.fhj.kannstdudas.presentation.viewmodel.NavigationViewModel
 @Composable
 fun HomeLayout(
     navController: NavHostController,
-    viewModel: NavigationViewModel,
+    navigationViewModel: NavigationViewModel,
+    authenticationViewModel: AuthViewModel,
     content: @Composable () -> Unit
 ) {
     Scaffold(
-        topBar = { TopBar(navController, viewModel) },
-        bottomBar = { NavBar(navController, viewModel) }
+        topBar = { TopBar(navController, navigationViewModel, authenticationViewModel) },
+        bottomBar = { NavBar(navController, navigationViewModel) }
     ) { innerPadding ->
         Column(
             modifier = Modifier

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.fhj.kannstdudas.data.repository.FirestoreSkillRepository
 import at.fhj.kannstdudas.data.repository.UserRepository
-import at.fhj.kannstdudas.domain.User
+import at.fhj.kannstdudas.domain.model.User
 import at.fhj.kannstdudas.domain.model.Skill
 import at.fhj.kannstdudas.domain.usecase.skill.AddSubscribedSkillUseCase
 import at.fhj.kannstdudas.domain.usecase.skill.DeleteSkillUseCase

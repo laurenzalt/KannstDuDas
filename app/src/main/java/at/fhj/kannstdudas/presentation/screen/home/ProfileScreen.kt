@@ -8,19 +8,17 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,9 +32,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -47,7 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.R
-import at.fhj.kannstdudas.domain.User
+import at.fhj.kannstdudas.domain.model.User
 import at.fhj.kannstdudas.navigation.Route
 import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 import coil.compose.rememberAsyncImagePainter
@@ -86,29 +83,28 @@ fun ProfileScreen(
         Greeting(user)
         ProfilePicture(viewModel, user)
         UserInfo(user)
-        SignOut(viewModel)
+        SignOutButton(viewModel)
     }
 }
 
 @Composable
 fun Greeting(user: User?) {
     Text(
-        text = "Hello, ${user?.username ?: "Guest"}",
+        text = stringResource(id = R.string.greeting, user?.username ?: stringResource(R.string.guest)),
         fontWeight = FontWeight.Bold,
         fontSize = 26.sp,
         overflow = TextOverflow.Ellipsis
     )
 }
 
-
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ProfilePicture(viewModel: AuthViewModel, user: User?) {
     val permissionState = rememberPermissionState(android.Manifest.permission.READ_EXTERNAL_STORAGE)
     val painter = rememberAsyncImagePainter(
-        model = user?.profilePictureUri,
-        contentScale = ContentScale.FillWidth,
-        placeholder = painterResource(R.drawable.test_profile_icon)
+        model = user?.profile_picture,
+        contentScale = ContentScale.Crop,
+        placeholder = rememberVectorPainter(Icons.Default.AccountCircle)
     )
 
     var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
@@ -142,7 +138,7 @@ fun ProfilePicture(viewModel: AuthViewModel, user: User?) {
     ) {
         Image(
             painter = painter,
-            contentDescription = "Profile Picture",
+            contentDescription = stringResource(R.string.profile_picture_description),
             modifier = Modifier
                 .fillMaxSize()
                 .aspectRatio(1f)
@@ -157,11 +153,14 @@ fun ProfilePicture(viewModel: AuthViewModel, user: User?) {
                     permissionState.launchPermissionRequest()
                 }
             },
-            modifier = Modifier.align(Alignment.BottomEnd)
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .size(40.dp)
+                .clip(CircleShape)
         ) {
             Icon(
                 imageVector = Icons.Default.Edit,
-                contentDescription = "Edit"
+                contentDescription = stringResource(R.string.edit)
             )
         }
     }
@@ -174,34 +173,29 @@ fun UserInfo(user: User?) {
             .padding(8.dp)
             .fillMaxWidth()
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            StyledText(label = "Email", value = user?.email ?: "nofirestore@test.com")
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = buildAnnotatedString {
+                    append("${stringResource(R.string.email)}: ")
+                    pushStyle(SpanStyle(fontWeight = FontWeight.Normal))
+                    append(user?.email ?: "nofirestore@test.com")
+                    pop()
+                },
+                style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            )
         }
     }
 }
 
 @Composable
-fun StyledText(label: String, value: String) {
-    Text(
-        text = buildAnnotatedString {
-            append("$label: ")
-            pushStyle(SpanStyle(fontWeight = FontWeight.Normal))
-            append(value)
-            pop()
-        },
-        style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
-    )
-}
-
-@Composable
-fun SignOut(viewModel: AuthViewModel) {
+fun SignOutButton(viewModel: AuthViewModel) {
     Button(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
         onClick = {
             viewModel.logoutUser()
-        },
+        }
     ) {
         Text(stringResource(R.string.profile_logout))
     }

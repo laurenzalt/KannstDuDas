@@ -19,6 +19,9 @@ class NavigationViewModel @Inject constructor() : ViewModel() {
     private val _profileSelected = mutableStateOf(false)
     val profileSelected: MutableState<Boolean> = _profileSelected
 
+    private val _currentScreenLabel = mutableStateOf("Explore")
+    val currentScreenLabel: MutableState<String> = _currentScreenLabel
+
     fun setSelectedItem(index: Int) {
         _selectedItem.value = index
     }
@@ -31,4 +34,7 @@ class NavigationViewModel @Inject constructor() : ViewModel() {
     fun clearProfileSelection() {
         _profileSelected.value = false
     }
-}
+
+    fun updateCurrentScreenLabel(label: String) {
+        _currentScreenLabel.value = label
+    }}

@@ -1,7 +1,7 @@
 package at.fhj.kannstdudas.domain.usecase.user
 
 import at.fhj.kannstdudas.data.repository.UserRepository
-import at.fhj.kannstdudas.domain.User
+import at.fhj.kannstdudas.domain.model.User
 import javax.inject.Inject
 
 /**

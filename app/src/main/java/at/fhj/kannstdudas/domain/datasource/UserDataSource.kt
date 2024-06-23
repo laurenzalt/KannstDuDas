@@ -1,7 +1,7 @@
 package at.fhj.kannstdudas.domain.datasource
 
 import android.net.Uri
-import at.fhj.kannstdudas.domain.User
+import at.fhj.kannstdudas.domain.model.User
 
 /**
  * at.fhj.kannstdudas.domain.model.User
