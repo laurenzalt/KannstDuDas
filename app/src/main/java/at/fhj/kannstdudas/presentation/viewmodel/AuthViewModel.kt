@@ -55,17 +55,17 @@ class AuthViewModel @Inject constructor(
 
     fun setUserEmail(email: String) {
         _user.value = _user.value?.copy(email = email)
-            ?: User(email = email, username = "", password = "", profilePicture = "")
+            ?: User(email = email, username = "", password = "")
     }
 
     fun setUserPassword(password: String) {
         _user.value = _user.value?.copy(password = password)
-            ?: User(email = "", username = "", password = password, profilePicture = "")
+            ?: User(email = "", username = "", password = password)
     }
 
     fun setUsername(username: String) {
         _user.value = _user.value?.copy(username = username)
-            ?: User(email = "", username = username, password = "", profilePicture = "")
+            ?: User(email = "", username = username, password = "")
     }
 
     fun signIn() {
@@ -100,7 +100,7 @@ class AuthViewModel @Inject constructor(
         val email = _user.value?.email ?: return
         viewModelScope.launch {
             try {
-                resetPasswordUseCase(User(email = email, username = "", password = "", profilePicture = ""))
+                resetPasswordUseCase(User(email = email, username = "", password = ""))
                 _errorMessage.value = "Reset password E-Mail sent"
             } catch (e: Exception) {
                 _errorMessage.value = e.message
@@ -120,23 +120,23 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private fun fetchCurrentUser() {
-        viewModelScope.launch {
-            try {
-                val currentUser = getCurrentUserUseCase()
-                _user.value = currentUser
-            } catch (e: Exception) {
-                _errorMessage.value = e.message
-            }
-        }
-    }
-
     fun uploadProfilePicture(uri: Uri) {
         viewModelScope.launch {
             try {
                 val url = userRepository.uploadProfilePicture(uri)
                 userRepository.uploadProfilePicture(url)
                 fetchCurrentUser()
+            } catch (e: Exception) {
+                _errorMessage.value = e.message
+            }
+        }
+    }
+
+    private fun fetchCurrentUser() {
+        viewModelScope.launch {
+            try {
+                val currentUser = getCurrentUserUseCase()
+                _user.value = currentUser
             } catch (e: Exception) {
                 _errorMessage.value = e.message
             }

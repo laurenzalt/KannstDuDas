@@ -11,6 +11,7 @@ import javax.inject.Inject
  * at.fhj.kannstdudas.data.datasource
  * Created by Noah Dimmer on 20/06/2024
  */
+
 class FirestoreSkillDataSource @Inject constructor(
     firestore: FirebaseFirestore
 ) : SkillDataSource {

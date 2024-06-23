@@ -23,15 +23,20 @@ class FirestoreUserDataSource @Inject constructor(
         val userMap = mapOf(
             "email" to user.email,
             "username" to user.username,
-            "profile_picture" to user.profilePicture,
+            "profile_picture" to user.profile_picture,
             "uid" to user.uid
         )
         firestore.collection("users").document(user.uid).set(userMap).await()
     }
 
     override suspend fun getUser(uid: String): User? {
-        val document = firestore.collection("users").document(uid).get().await()
-        return document.toObject(User::class.java)
+        return try {
+            val document = firestore.collection("users").document(uid).get().await()
+            document.toObject(User::class.java)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
     override suspend fun saveProfilePicture(uri: Uri, uid: String): Uri {

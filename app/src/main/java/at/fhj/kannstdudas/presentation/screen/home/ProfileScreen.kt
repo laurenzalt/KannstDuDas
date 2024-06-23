@@ -34,7 +34,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -103,7 +105,11 @@ fun Greeting(user: User?) {
 @Composable
 fun ProfilePicture(viewModel: AuthViewModel, user: User?) {
     val permissionState = rememberPermissionState(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-    val painter = rememberAsyncImagePainter(user?.profilePicture)
+    val painter = rememberAsyncImagePainter(
+        model = user?.profilePictureUri,
+        contentScale = ContentScale.FillWidth,
+        placeholder = painterResource(R.drawable.test_profile_icon)
+    )
 
     var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var hasPermission by rememberSaveable { mutableStateOf(permissionState.status.isGranted) }
