@@ -26,7 +26,9 @@ class MainActivity : ComponentActivity() {
             KannstDuDasTheme {
                 AppNavGraph(
                     navController = rememberNavController(),
-                    viewModel = hiltViewModel())
+                    navigationViewModel = hiltViewModel(),
+                    authViewModel = hiltViewModel()
+                )
             }
         }
     }

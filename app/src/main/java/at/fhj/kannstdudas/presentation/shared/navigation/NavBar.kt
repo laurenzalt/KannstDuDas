@@ -1,6 +1,7 @@
 package at.fhj.kannstdudas.presentation.shared.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
@@ -11,11 +12,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.navigation.Screen
+import at.fhj.kannstdudas.presentation.viewmodel.NavigationViewModel
 
 /**
  * at.fhj.kannstdudas.presentation.shared.navbar
@@ -23,16 +26,18 @@ import at.fhj.kannstdudas.navigation.Screen
  */
 
 @Composable
-fun NavBar(navController: NavHostController) {
-    var selectedItem by rememberSaveable { mutableIntStateOf(0) }
+fun NavBar(navController: NavHostController, viewModel: NavigationViewModel) {
+    val selectedItem = viewModel.selectedItem.value
+    val profileSelected = viewModel.profileSelected.value
     val items = NavigationItemsProvider.items
 
     NavigationBar {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
-                selected = selectedItem == index,
+                selected = selectedItem == index && !profileSelected,
                 onClick = {
-                    selectedItem = index
+                    viewModel.setSelectedItem(index)
+                    viewModel.clearProfileSelection()
                     navController.navigate(item.screen)
                 },
                 label = { Text(item.screen.label) },
@@ -41,6 +46,7 @@ fun NavBar(navController: NavHostController) {
         }
     }
 }
+
 
 data class NavigationItem(
     val screen: Screen,

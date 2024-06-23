@@ -2,12 +2,15 @@ package at.fhj.kannstdudas.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navigation
+import at.fhj.kannstdudas.navigation.Screen.Explore.label
 import at.fhj.kannstdudas.presentation.screen.home.EditSkillScreen
 import at.fhj.kannstdudas.presentation.screen.home.ExploreScreen
 import at.fhj.kannstdudas.presentation.screen.home.MySkillsScreen
@@ -19,6 +22,7 @@ import at.fhj.kannstdudas.presentation.screen.authentication.SignInScreen
 import at.fhj.kannstdudas.presentation.screen.authentication.SignUpScreen
 import at.fhj.kannstdudas.presentation.shared.layout.HomeLayout
 import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
+import at.fhj.kannstdudas.presentation.viewmodel.NavigationViewModel
 
 /**
  * at.fhj.kannstdudas.navigation
@@ -28,9 +32,10 @@ import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 @Composable
 fun AppNavGraph (
     navController: NavHostController,
-    viewModel: AuthViewModel
+    navigationViewModel: NavigationViewModel,
+    authViewModel: AuthViewModel
 ) {
-    val auth = viewModel.isSignedIn.collectAsState().value
+    val auth = authViewModel.isSignedIn.collectAsState().value
     val startDestination =
         if (auth) Route.HomeNav else Route.AuthNav
 
@@ -39,7 +44,7 @@ fun AppNavGraph (
         startDestination = startDestination
     ) {
         authNavGraph(navController)
-        homeNavGraph(navController)
+        homeNavGraph(navController, navigationViewModel)
     }
 }
 
@@ -56,25 +61,26 @@ fun NavGraphBuilder.authNavGraph(
 }
 
 fun NavGraphBuilder.homeNavGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    navigationViewModel: NavigationViewModel
 ) {
     navigation<Route.HomeNav>(
         startDestination = Screen.Explore,
     ) {
-        composable<Screen.Explore> { HomeLayout(navController) { ExploreScreen(navController) } }
-        composable<Screen.Profile> { HomeLayout(navController) { ProfileScreen(hiltViewModel(), navController) } }
-        composable<Screen.NewSkill> { HomeLayout(navController) { NewSkillScreen(navController) } }
-        composable<Screen.MySkills> { HomeLayout(navController) { MySkillsScreen(navController) } }
-        composable<Screen.SkillDetail> { HomeLayout(navController) { SkillDetailScreen("", navController) } }
+        composable<Screen.Explore> { HomeLayout(navController, navigationViewModel) { ExploreScreen(navController) } }
+        composable<Screen.Profile> { HomeLayout(navController, navigationViewModel) { ProfileScreen(hiltViewModel(), navController) } }
+        composable<Screen.NewSkill> { HomeLayout(navController, navigationViewModel) { NewSkillScreen(navController) } }
+        composable<Screen.MySkills> { HomeLayout(navController, navigationViewModel) { MySkillsScreen(navController) } }
+        composable<Screen.SkillDetail> { HomeLayout(navController, navigationViewModel) { SkillDetailScreen("", navController) } }
 
         // with IDs
         composable("SkillDetail/{skillId}") { backStackEntry ->
             val skillId = backStackEntry.arguments?.getString("skillId") ?: ""
-            HomeLayout(navController) { SkillDetailScreen(skillId, navController) }
+            HomeLayout(navController, navigationViewModel) { SkillDetailScreen(skillId, navController) }
         }
         composable("EditSkill/{skillId}") { backStackEntry ->
             val skillId = backStackEntry.arguments?.getString("skillId") ?: ""
-            HomeLayout(navController) { EditSkillScreen(skillId, navController) }
+            HomeLayout(navController, navigationViewModel) { EditSkillScreen(skillId, navController) }
         }
     }
 }

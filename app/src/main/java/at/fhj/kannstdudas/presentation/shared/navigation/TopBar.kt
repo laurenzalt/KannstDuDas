@@ -22,6 +22,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import at.fhj.kannstdudas.navigation.Screen
 import at.fhj.kannstdudas.navigation.Screen.Explore.label
+import at.fhj.kannstdudas.presentation.viewmodel.NavigationViewModel
 
 /**
  * at.fhj.kannstdudas.presentation.shared.topbar
@@ -29,23 +30,24 @@ import at.fhj.kannstdudas.navigation.Screen.Explore.label
  */
 
 @Composable
-fun TopBar(navController: NavHostController) {
-    val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = currentBackStackEntry?.destination
-    val currentLabel = currentDestination?.route?.let { _ ->
-        label
-    } ?: ""
+fun TopBar(navController: NavHostController, viewModel: NavigationViewModel) {
+    val currentScreenLabel = "test"
 
     TopAppBar(
         title = {
             Text(
-                text = currentLabel,
+                text = currentScreenLabel,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
         },
         actions = {
-            IconButton(onClick = { navController.navigate(Screen.Profile) }) {
+            IconButton(
+                onClick = {
+                    viewModel.selectProfile()
+                    navController.navigate(Screen.Profile)
+                }
+            ) {
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = "Profile",
