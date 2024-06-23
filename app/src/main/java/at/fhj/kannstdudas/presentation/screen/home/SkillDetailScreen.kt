@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
  * Created by Laurenz Altendorfer on 13/06/2024
  */
 
+//TODO: Button logic doesn't work when you are coming from My Skills and go to the subscribed skills
 @Composable
 fun SkillDetailScreen(skillId: String, navController: NavHostController, viewModel: SkillViewModel = hiltViewModel(), userViewModel : AuthViewModel = hiltViewModel()) {
 
@@ -107,13 +108,13 @@ fun SkillManagementButtons(skill: Skill, viewModel: SkillViewModel, navControlle
 
 @Composable
 fun SubscriptionButton(skill: Skill, viewModel: SkillViewModel, userViewModel: AuthViewModel) {
-    var isSubscribed by remember { mutableStateOf(false) }
+    var isSubscribed = viewModel.isSubscribedToSkill(skill.id)
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(skill.id) {
-        isSubscribed = viewModel.isSubscribedToSkill(skill.id)
-    }
+//    LaunchedEffect(skill.id) {
+//        isSubscribed = viewModel.isSubscribedToSkill(skill.id)
+//    }
 
     Button(
         onClick = {

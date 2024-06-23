@@ -32,7 +32,6 @@ import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
  * Created by Noah Dimmer on 13/06/2024
  */
 
-// TODO: Switch to SkillViewModel
 @Composable
 fun MySkillsScreen(navController: NavHostController, viewModel: SkillViewModel = hiltViewModel(), userViewModel : AuthViewModel = hiltViewModel()) {
     var showSubscribedSkills by remember { mutableStateOf(false) }
