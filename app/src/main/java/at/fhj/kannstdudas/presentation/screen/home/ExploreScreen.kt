@@ -27,7 +27,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -38,32 +37,23 @@ import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
 
 @Composable
 fun ExploreScreen(navController: NavHostController, viewModel: SkillViewModel = hiltViewModel()) {
-    val scope = rememberCoroutineScope()
-    val skills = viewModel.skills.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
-    val userMessage by viewModel.userMessage.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    // val filteredSkills = viewModel.filteredSkills.collectAsState(initial = listOf()).value
-    // val keyboardController = LocalSoftwareKeyboardController.current
-
-    // doesnt work
-    LaunchedEffect(userMessage) {
-        if (userMessage.isNotEmpty()) {
-            snackbarHostState.showSnackbar(userMessage)
-            viewModel.clearDeletionMessage()
-        }
-    }
+    val filteredSkills = viewModel.filteredSkills.collectAsState(initial = listOf()).value
 
     Scaffold(
         topBar = {
-            SearchBar(searchQuery, onQueryChanged = {
-                searchQuery = it
-            }, onDone = { keyboardController?.hide() })
+            SearchBar(
+                query = searchQuery,
+                onQueryChanged = {
+                    searchQuery = it
+                    viewModel.setSearchQuery(it)
+                },
+                onDone = { keyboardController?.hide() }
+            )
         }
     ) { padding ->
-        SkillList(skills = skills.value, padding, onSkillClick = { skill ->
+        SkillList(skills = filteredSkills, padding, onSkillClick = { skill ->
             navController.navigate("SkillDetail/${skill.id}")
         })
     }
