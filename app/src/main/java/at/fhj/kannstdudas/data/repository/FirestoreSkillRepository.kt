@@ -34,4 +34,8 @@ class FirestoreSkillRepository @Inject constructor(
     suspend fun isSubscribedToSkill(userId: String, skillId: String): Boolean {
         return skillDataSource.isSubscribedToSkill(userId, skillId)
     }
+
+    suspend fun editSkill(skill: Skill) {
+        skillDataSource.editSkill(skill)
+    }
 }

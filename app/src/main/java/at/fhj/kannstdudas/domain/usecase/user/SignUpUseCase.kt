@@ -1,4 +1,4 @@
-package at.fhj.kannstdudas.domain.usecase
+package at.fhj.kannstdudas.domain.usecase.user
 
 import at.fhj.kannstdudas.data.datasource.FirestoreUserDataSource
 import at.fhj.kannstdudas.data.repository.UserRepository

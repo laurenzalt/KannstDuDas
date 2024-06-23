@@ -1,4 +1,4 @@
-package at.fhj.kannstdudas.domain.usecase
+package at.fhj.kannstdudas.domain.usecase.skill
 
 import at.fhj.kannstdudas.data.repository.FirestoreSkillRepository
 import at.fhj.kannstdudas.domain.model.Skill

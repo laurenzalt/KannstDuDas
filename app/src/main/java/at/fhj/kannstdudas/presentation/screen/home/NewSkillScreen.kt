@@ -18,11 +18,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.SoftwareKeyboardController
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -31,8 +28,6 @@ import at.fhj.kannstdudas.domain.model.Category
 import at.fhj.kannstdudas.domain.model.Skill
 import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
-import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -79,7 +74,6 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillViewModel =
                         if (skill != null) {
                             viewModel.saveSkill(skill)
                         }
-                        // viewModel.addMySkills(skill)
                         coroutineScope.launch {
                             snackbarHostState.showSnackbar(
                                 message = "Skill added successfully!",
@@ -154,28 +148,4 @@ fun DescriptionInput(description: String, onDescriptionChange: (String) -> Unit)
         maxLines = 20,
         textStyle = LocalTextStyle.current.copy(lineHeight = 20.sp)
     )
-}
-
-@Composable
-fun CreateButton(title: String, description: String, category: Category, viewModel: SkillsViewModel,
-                 snackbarHostState: SnackbarHostState, coroutineScope: CoroutineScope,
-                 focusManager: FocusManager, keyboardController: SoftwareKeyboardController?) {
-    Button(
-        onClick = {
-            if (title.isNotEmpty() && description.isNotEmpty()) {
-                viewModel.addSkill(Skill("", title, description, category))
-                coroutineScope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = "Skill added successfully!",
-                        duration = SnackbarDuration.Short
-                    )
-                }
-                keyboardController?.hide()
-                focusManager.clearFocus()
-            }
-        },
-        // modifier = Modifier.align(Alignment.End)
-    ) {
-        Text("Create")
-    }
 }

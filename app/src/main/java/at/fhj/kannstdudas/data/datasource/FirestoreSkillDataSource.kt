@@ -3,6 +3,7 @@ package at.fhj.kannstdudas.data.datasource
 import at.fhj.kannstdudas.domain.datasource.SkillDataSource
 import at.fhj.kannstdudas.domain.model.Skill
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -44,5 +45,12 @@ class FirestoreSkillDataSource @Inject constructor(
         return true
     }
 
+    override suspend fun editSkill(skill: Skill) {
+        try {
+            skillCollection.document(skill.id).set(skill).await()
+        } catch (e: FirebaseFirestoreException) {
+            throw e
+        }
+    }
 
 }

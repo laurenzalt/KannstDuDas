@@ -35,8 +35,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.domain.model.Skill
 import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
-import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun ExploreScreen(navController: NavHostController, viewModel: SkillViewModel = hiltViewModel()) {

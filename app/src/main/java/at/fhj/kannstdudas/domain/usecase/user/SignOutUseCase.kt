@@ -1,4 +1,4 @@
-package at.fhj.kannstdudas.domain.usecase
+package at.fhj.kannstdudas.domain.usecase.user
 
 import at.fhj.kannstdudas.data.repository.UserRepository
 import javax.inject.Inject

@@ -1,24 +1,20 @@
 package at.fhj.kannstdudas.presentation.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.fhj.kannstdudas.data.repository.FirestoreSkillRepository
 import at.fhj.kannstdudas.data.repository.UserRepository
 import at.fhj.kannstdudas.domain.User
 import at.fhj.kannstdudas.domain.model.Skill
-import at.fhj.kannstdudas.domain.usecase.DeleteSkillUseCase
-import at.fhj.kannstdudas.domain.usecase.GetAllSkillsUseCase
-import at.fhj.kannstdudas.domain.usecase.GetCurrentUserUseCase
-import at.fhj.kannstdudas.domain.usecase.GetSkillUseCase
-import at.fhj.kannstdudas.domain.usecase.GetSkillsByUserUseCase
-import at.fhj.kannstdudas.domain.usecase.IsSubscribedToSkillUseCase
-import at.fhj.kannstdudas.domain.usecase.SaveSkillUseCase
+import at.fhj.kannstdudas.domain.usecase.skill.DeleteSkillUseCase
+import at.fhj.kannstdudas.domain.usecase.skill.EditSkillUseCase
+import at.fhj.kannstdudas.domain.usecase.skill.GetAllSkillsUseCase
+import at.fhj.kannstdudas.domain.usecase.user.GetCurrentUserUseCase
+import at.fhj.kannstdudas.domain.usecase.skill.GetSkillUseCase
+import at.fhj.kannstdudas.domain.usecase.skill.GetSkillsByUserUseCase
+import at.fhj.kannstdudas.domain.usecase.skill.IsSubscribedToSkillUseCase
+import at.fhj.kannstdudas.domain.usecase.skill.SaveSkillUseCase
 import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -39,7 +35,8 @@ class SkillViewModel @Inject constructor(
     private val getSkillsByUserUseCase: GetSkillsByUserUseCase,
     private val isSubscribedToSkillUseCase: IsSubscribedToSkillUseCase,
     private val getAllSkillsUseCase: GetAllSkillsUseCase,
-    private val getCurrentUserUseCase: GetCurrentUserUseCase
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val editSkillUseCase: EditSkillUseCase
 ): ViewModel() {
     private val _skill = MutableStateFlow<Skill?>(null)
     val skill: StateFlow<Skill?> = _skill
@@ -161,5 +158,15 @@ class SkillViewModel @Inject constructor(
             }
         }
 //        return _isSubscribedToSkill.value
+    }
+
+    fun editSkill(skill: Skill) {
+        viewModelScope.launch {
+            try {
+                editSkillUseCase(skill)
+            } catch (e: FirebaseFirestoreException) {
+                println(e)
+            }
+        }
     }
 }
