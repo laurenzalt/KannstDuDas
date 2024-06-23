@@ -2,21 +2,30 @@ package at.fhj.kannstdudas.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.fhj.kannstdudas.data.repository.FirestoreSkillRepository
 import at.fhj.kannstdudas.data.repository.UserRepository
 import at.fhj.kannstdudas.domain.User
 import at.fhj.kannstdudas.domain.model.Skill
+import at.fhj.kannstdudas.domain.usecase.skill.AddSubscribedSkillUseCase
 import at.fhj.kannstdudas.domain.usecase.skill.DeleteSkillUseCase
 import at.fhj.kannstdudas.domain.usecase.skill.EditSkillUseCase
 import at.fhj.kannstdudas.domain.usecase.skill.GetAllSkillsUseCase
 import at.fhj.kannstdudas.domain.usecase.user.GetCurrentUserUseCase
 import at.fhj.kannstdudas.domain.usecase.skill.GetSkillUseCase
 import at.fhj.kannstdudas.domain.usecase.skill.GetSkillsByUserUseCase
+import at.fhj.kannstdudas.domain.usecase.skill.GetSubscribedSkillsUseCase
 import at.fhj.kannstdudas.domain.usecase.skill.IsSubscribedToSkillUseCase
 import at.fhj.kannstdudas.domain.usecase.skill.SaveSkillUseCase
+import at.fhj.kannstdudas.domain.usecase.skill.UnsubscribeSkillUseCase
 import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,6 +37,7 @@ import javax.inject.Inject
 @Suppress("ImplicitThis")
 @HiltViewModel
 class SkillViewModel @Inject constructor(
+    private val skillRepository: FirestoreSkillRepository,
     private val userRepository: UserRepository,
     private val getSkillUseCase: GetSkillUseCase,
     private val saveSkillUseCase: SaveSkillUseCase,
@@ -36,13 +46,13 @@ class SkillViewModel @Inject constructor(
     private val isSubscribedToSkillUseCase: IsSubscribedToSkillUseCase,
     private val getAllSkillsUseCase: GetAllSkillsUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val editSkillUseCase: EditSkillUseCase
+    private val editSkillUseCase: EditSkillUseCase,
+    private val addSubscribedSkillUseCase: AddSubscribedSkillUseCase,
+    private val unsubscribeSkillUseCase: UnsubscribeSkillUseCase,
+    private val getSubscribedSkillsUseCase: GetSubscribedSkillsUseCase
 ): ViewModel() {
     private val _skill = MutableStateFlow<Skill?>(null)
     val skill: StateFlow<Skill?> = _skill
-
-    private val _skills = MutableStateFlow<List<Skill?>>(emptyList())
-    val skills: StateFlow<List<Skill?>> = _skills
 
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user
@@ -55,6 +65,28 @@ class SkillViewModel @Inject constructor(
 
     private val _isMySkill = MutableStateFlow(false)
     val isMySkill: StateFlow<Boolean> = _isMySkill
+
+    private val _mySkills = MutableStateFlow<List<Skill?>>(emptyList())
+    val mySkills: StateFlow<List<Skill?>> = _mySkills
+
+    private val _subscribedSkills = MutableStateFlow<List<Skill?>>(emptyList())
+    val subscribedSkills: StateFlow<List<Skill?>> = _subscribedSkills
+
+    private val _skills = MutableStateFlow<List<Skill?>>(emptyList())
+    val skills: StateFlow<List<Skill?>> = _skills
+
+    private val _searchQuery = MutableStateFlow("")
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val filteredSkills = _searchQuery.flatMapLatest { query ->
+        _skills.map { allSkills ->
+            if (query.isBlank()) {
+                allSkills.filterNotNull()
+            } else {
+                allSkills.filterNotNull().filter { it.name.contains(query, ignoreCase = true) }
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
 
     init {
@@ -102,7 +134,6 @@ class SkillViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _skills.value = getAllSkillsUseCase()
-                // skillRepository.getAllSkills()
             } catch (e: FirebaseFirestoreException) {
                 println(e)
                 _skills.value = emptyList()
@@ -110,10 +141,10 @@ class SkillViewModel @Inject constructor(
         }
     }
 
-    fun getSkillsByUser(): List<Skill?> {
+    fun getSkillsByUser() {
         viewModelScope.launch {
             try {
-                _user.value = userRepository.getCurrentUser()
+                 _user.value = userRepository.getCurrentUser()
             } catch (e: FirebaseFirestoreException) {
                 println(e)
                 _user.value = null
@@ -121,13 +152,26 @@ class SkillViewModel @Inject constructor(
 
             if (_user.value != null) {
                 try {
-                    _skills.value = getSkillsByUserUseCase(_user.value?.uid.toString())
+                    val currentUser = _user.value ?: return@launch
+                    _mySkills.value = getSkillsByUserUseCase(currentUser.uid)
                 } catch (e: FirebaseFirestoreException) {
                     println("Error fetching skills: ${e.message}")
                 }
             }
         }
-        return _skills.value
+    }
+
+    fun isSubscribedToSkill(skillId: String): Boolean {
+        viewModelScope.launch {
+            try {
+                _user.value = getCurrentUserUseCase()
+                _isSubscribedToSkill.value = isSubscribedToSkillUseCase(_user.value?.uid, skillId)
+            } catch (e: FirebaseFirestoreException) {
+                println(e)
+                _isSubscribedToSkill.value = false
+            }
+        }
+        return _isSubscribedToSkill.value
     }
 
     fun isMySkill(skillId: String) {
@@ -140,24 +184,6 @@ class SkillViewModel @Inject constructor(
                 println(e)
             }
         }
-//        return _isMySkill.value
-    }
-
-    fun clearDeletionMessage() {
-        _userMessage.value = ""
-    }
-
-    fun isSubscribedToSkill(skillId: String) {
-        viewModelScope.launch {
-            try {
-                _user.value = getCurrentUserUseCase()
-                _isSubscribedToSkill.value = isSubscribedToSkillUseCase(_user.value?.uid, skillId)
-            } catch (e: FirebaseFirestoreException) {
-                println(e)
-                _isSubscribedToSkill.value = false
-            }
-        }
-//        return _isSubscribedToSkill.value
     }
 
     fun editSkill(skill: Skill) {
@@ -168,5 +194,49 @@ class SkillViewModel @Inject constructor(
                 println(e)
             }
         }
+    }
+
+    fun addSubscribedSkill(skill: Skill) {
+        viewModelScope.launch {
+            try {
+                _user.value = getCurrentUserUseCase()
+                val currentUser = _user.value ?: return@launch
+                addSubscribedSkillUseCase(currentUser.uid, skill)
+                _userMessage.value = "Skill subscribed successfully"
+            } catch (e: FirebaseFirestoreException) {
+                _userMessage.value = "Failed to subscribe to skill"
+                println(e)
+            }
+        }
+    }
+
+    fun unsubscribeSkill(skillId: String) {
+        viewModelScope.launch {
+            try {
+                _user.value = getCurrentUserUseCase()
+                val currentUser = _user.value ?: return@launch
+                unsubscribeSkillUseCase(currentUser.uid, skillId)
+                _userMessage.value = "Skill unsubscribed successfully"
+            } catch (e: FirebaseFirestoreException) {
+                _userMessage.value = "Failed to unsubscribe from skill"
+                println(e)
+            }
+        }
+    }
+
+    fun getSubscribedSkills() {
+        viewModelScope.launch {
+            try {
+                _user.value = getCurrentUserUseCase()
+                val currentUser = _user.value ?: return@launch
+                _subscribedSkills.value = getSubscribedSkillsUseCase(currentUser.uid)
+            } catch (e: FirebaseFirestoreException) {
+                println(e)
+            }
+        }
+    }
+
+    fun setSearchQuery(query: String) {
+        _searchQuery.value = query
     }
 }

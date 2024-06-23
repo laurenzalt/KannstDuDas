@@ -14,11 +14,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,25 +30,27 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.domain.model.Skill
 import at.fhj.kannstdudas.navigation.Screen
+import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
+import kotlinx.coroutines.launch
 
 /**
  * at.fhj.kannstdudas.presentation.screen
  * Created by Laurenz Altendorfer on 13/06/2024
  */
 
+//TODO: Button logic doesn't work when you are coming from My Skills and go to the subscribed skills
 @Composable
-fun SkillDetailScreen(skillId: String, navController: NavHostController, viewModel: SkillViewModel = hiltViewModel()) {
-    val skill by viewModel.skill.collectAsState()
-    val isMySkill by viewModel.isMySkill.collectAsState()
-    val isSubscribed by viewModel.isSubscribedToSkill.collectAsState()
+fun SkillDetailScreen(skillId: String, navController: NavHostController, viewModel: SkillViewModel = hiltViewModel(), userViewModel : AuthViewModel = hiltViewModel()) {
 
-
-    LaunchedEffect(skillId) {
+    LaunchedEffect(true) {
         viewModel.getSkill(skillId)
         viewModel.isMySkill(skillId)
         viewModel.isSubscribedToSkill(skillId)
     }
+
+    val skill by viewModel.skill.collectAsState()
+    val isMySkill by viewModel.isMySkill.collectAsState()
 
     Scaffold { innerPadding ->
         Column(
@@ -58,7 +63,7 @@ fun SkillDetailScreen(skillId: String, navController: NavHostController, viewMod
         ) {
             skill?.let { validSkill ->
                 Text(
-                    text = validSkill.name ?: "Unknown Skill",
+                    text = validSkill.name,
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(vertical = 16.dp)
@@ -67,8 +72,7 @@ fun SkillDetailScreen(skillId: String, navController: NavHostController, viewMod
                 if (isMySkill) {
                     SkillManagementButtons(validSkill, viewModel, navController)
                 } else {
-                    // TODO(not yet implemented)
-                    SubscriptionButton(validSkill, isSubscribed, viewModel)
+                    SubscriptionButton(validSkill, viewModel, userViewModel)
                 }
             }
         }
@@ -103,14 +107,23 @@ fun SkillManagementButtons(skill: Skill, viewModel: SkillViewModel, navControlle
 }
 
 @Composable
-fun SubscriptionButton(skill: Skill, isSubscribed: Boolean, viewModel: SkillViewModel) {
+fun SubscriptionButton(skill: Skill, viewModel: SkillViewModel, userViewModel: AuthViewModel) {
+    var isSubscribed = viewModel.isSubscribedToSkill(skill.id)
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+//    LaunchedEffect(skill.id) {
+//        isSubscribed = viewModel.isSubscribedToSkill(skill.id)
+//    }
+
     Button(
         onClick = {
             if (isSubscribed) {
-                // viewModel.unsubscribeSkill(skill)
+                viewModel.unsubscribeSkill(skill.id)
             } else {
-                // viewModel.addSubscribedSkill(skill)
+                viewModel.addSubscribedSkill(skill)
             }
+            isSubscribed = !isSubscribed
         },
         modifier = Modifier
             .fillMaxWidth()

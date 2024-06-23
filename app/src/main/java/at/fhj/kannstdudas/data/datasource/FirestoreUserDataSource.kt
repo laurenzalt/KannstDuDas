@@ -24,7 +24,8 @@ class FirestoreUserDataSource @Inject constructor(
             "email" to user.email,
             "username" to user.username,
             "profile_picture" to user.profile_picture,
-            "uid" to user.uid
+            "uid" to user.uid,
+            "subscribed_skills" to user.subscribedSkills
         )
         firestore.collection("users").document(user.uid).set(userMap).await()
     }
