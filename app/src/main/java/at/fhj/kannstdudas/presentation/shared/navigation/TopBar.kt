@@ -23,10 +23,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import at.fhj.kannstdudas.R
 import at.fhj.kannstdudas.navigation.Screen
 import at.fhj.kannstdudas.navigation.Screen.Explore.label
 import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
@@ -40,8 +43,9 @@ import coil.compose.rememberAsyncImagePainter
 
 @Composable
 fun TopBar(navController: NavHostController, navigationViewModel: NavigationViewModel, authViewModel: AuthViewModel) {
-    val currentScreenLabel = "test"
-    val currentUser = authViewModel.user.collectAsState().value
+    val currentScreenLabel = "KannstDuDas"
+    val currentUser by authViewModel.user.collectAsState()
+    val selectProfile = navigationViewModel.profileSelected.value
 
     TopAppBar(
         title = {
@@ -52,24 +56,26 @@ fun TopBar(navController: NavHostController, navigationViewModel: NavigationView
             )
         },
         actions = {
-            Box(
-            ) {
-                IconButton(
-                    onClick = {
-                        navigationViewModel.selectProfile()
-                        navController.navigate(Screen.Profile)
+            if (!selectProfile) {
+                Box {
+                    IconButton(
+                        onClick = {
+                            navigationViewModel.selectProfile()
+                            navController.navigate(Screen.Profile)
+                        }
+                    ) {
+                        Image(
+                            painter = rememberAsyncImagePainter(
+                                model = currentUser?.profile_picture,
+                                placeholder = rememberVectorPainter(image = Icons.Default.AccountCircle)
+                            ),
+                            contentDescription = stringResource(R.string.profile_picture_description),
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .border(1.dp, Color.Gray, CircleShape)
+                        )
                     }
-                ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(
-                            model = currentUser?.profile_picture,
-                        ),
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .border(1.dp, Color.Gray, CircleShape)
-                    )
                 }
             }
         },
