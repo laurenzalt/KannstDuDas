@@ -11,13 +11,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import at.fhj.kannstdudas.presentation.viewmodel.SkillsViewModel
+import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
 
 @Composable
-fun EditSkillScreen(skillId: String?, navController: NavController, viewModel: SkillsViewModel = hiltViewModel()) {
-    val skill = skillId?.let { viewModel.getSkillById(it) }
+fun EditSkillScreen(skillId: String?, navController: NavController, viewModel: SkillViewModel = hiltViewModel()) {
+    val skill = skillId?.let { viewModel.getSkill(it) }
 
-    // Example composable showing editable fields
     var name by remember { mutableStateOf(skill?.name ?: "") }
     var description by remember { mutableStateOf(skill?.description ?: "") }
 
@@ -35,6 +34,7 @@ fun EditSkillScreen(skillId: String?, navController: NavController, viewModel: S
         Button(onClick = {
             skill?.let {
                 viewModel.editSkill(it.copy(name = name, description = description))
+                navController.navigate("SkillDetail/${it.id}")
             }
         }) {
             Text("Save Changes")

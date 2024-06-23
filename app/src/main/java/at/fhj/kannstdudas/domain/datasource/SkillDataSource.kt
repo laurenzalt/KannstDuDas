@@ -13,4 +13,5 @@ interface SkillDataSource {
     suspend fun getAllSkills(): List<Skill>
     suspend fun getSkillsByUser(userId: String): List<Skill>
     suspend fun isSubscribedToSkill(userId: String, skillId: String): Boolean
+    suspend fun editSkill(skill: Skill)
 }
