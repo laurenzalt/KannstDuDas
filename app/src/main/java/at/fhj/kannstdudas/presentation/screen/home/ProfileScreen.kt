@@ -8,11 +8,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -20,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -47,7 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import at.fhj.kannstdudas.R
-import at.fhj.kannstdudas.domain.User
+import at.fhj.kannstdudas.domain.model.User
 import at.fhj.kannstdudas.navigation.Route
 import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 import coil.compose.rememberAsyncImagePainter
@@ -106,9 +102,10 @@ fun Greeting(user: User?) {
 fun ProfilePicture(viewModel: AuthViewModel, user: User?) {
     val permissionState = rememberPermissionState(android.Manifest.permission.READ_EXTERNAL_STORAGE)
     val painter = rememberAsyncImagePainter(
-        model = user?.profilePictureUri,
-        contentScale = ContentScale.FillWidth,
-        placeholder = painterResource(R.drawable.test_profile_icon)
+        model = user?.profile_picture,
+        contentScale = ContentScale.Crop,
+        placeholder = painterResource(R.drawable.test_profile_icon),
+
     )
 
     var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }

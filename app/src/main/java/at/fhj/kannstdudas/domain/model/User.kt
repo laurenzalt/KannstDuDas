@@ -1,7 +1,4 @@
-package at.fhj.kannstdudas.domain
-
-import android.net.Uri
-import at.fhj.kannstdudas.domain.model.Skill
+package at.fhj.kannstdudas.domain.model
 
 /**
  * at.fhj.kannstdudas.domain.model
@@ -16,7 +13,4 @@ data class User(
     val uid: String = "",
     val mySkills: List<Skill> = listOf(),
     val subscribedSkills: List<Skill> = listOf()
-) {
-    val profilePictureUri: Uri
-        get() = if (profile_picture.isNotEmpty()) Uri.parse(profile_picture) else Uri.EMPTY
-}
+)

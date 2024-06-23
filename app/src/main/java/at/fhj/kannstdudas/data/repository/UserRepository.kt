@@ -1,7 +1,7 @@
 package at.fhj.kannstdudas.data.repository
 
 import android.net.Uri
-import at.fhj.kannstdudas.domain.User
+import at.fhj.kannstdudas.domain.model.User
 import at.fhj.kannstdudas.domain.datasource.UserDataSource
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await

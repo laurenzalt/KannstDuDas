@@ -44,7 +44,7 @@ fun AppNavGraph (
         startDestination = startDestination
     ) {
         authNavGraph(navController)
-        homeNavGraph(navController, navigationViewModel)
+        homeNavGraph(navController, navigationViewModel, authViewModel)
     }
 }
 
@@ -62,25 +62,26 @@ fun NavGraphBuilder.authNavGraph(
 
 fun NavGraphBuilder.homeNavGraph(
     navController: NavHostController,
-    navigationViewModel: NavigationViewModel
+    navigationViewModel: NavigationViewModel,
+    authenticationViewModel: AuthViewModel,
 ) {
     navigation<Route.HomeNav>(
         startDestination = Screen.Explore,
     ) {
-        composable<Screen.Explore> { HomeLayout(navController, navigationViewModel) { ExploreScreen(navController) } }
-        composable<Screen.Profile> { HomeLayout(navController, navigationViewModel) { ProfileScreen(hiltViewModel(), navController) } }
-        composable<Screen.NewSkill> { HomeLayout(navController, navigationViewModel) { NewSkillScreen(navController) } }
-        composable<Screen.MySkills> { HomeLayout(navController, navigationViewModel) { MySkillsScreen(navController) } }
-        composable<Screen.SkillDetail> { HomeLayout(navController, navigationViewModel) { SkillDetailScreen("", navController) } }
+        composable<Screen.Explore> { HomeLayout(navController, navigationViewModel, authenticationViewModel) { ExploreScreen(navController) } }
+        composable<Screen.Profile> { HomeLayout(navController, navigationViewModel, authenticationViewModel) { ProfileScreen(hiltViewModel(), navController) } }
+        composable<Screen.NewSkill> { HomeLayout(navController, navigationViewModel, authenticationViewModel) { NewSkillScreen(navController) } }
+        composable<Screen.MySkills> { HomeLayout(navController, navigationViewModel, authenticationViewModel) { MySkillsScreen(navController) } }
+        composable<Screen.SkillDetail> { HomeLayout(navController, navigationViewModel, authenticationViewModel) { SkillDetailScreen("", navController) } }
 
         // with IDs
         composable("SkillDetail/{skillId}") { backStackEntry ->
             val skillId = backStackEntry.arguments?.getString("skillId") ?: ""
-            HomeLayout(navController, navigationViewModel) { SkillDetailScreen(skillId, navController) }
+            HomeLayout(navController, navigationViewModel, authenticationViewModel) { SkillDetailScreen(skillId, navController) }
         }
         composable("EditSkill/{skillId}") { backStackEntry ->
             val skillId = backStackEntry.arguments?.getString("skillId") ?: ""
-            HomeLayout(navController, navigationViewModel) { EditSkillScreen(skillId, navController) }
+            HomeLayout(navController, navigationViewModel, authenticationViewModel) { EditSkillScreen(skillId, navController) }
         }
     }
 }
