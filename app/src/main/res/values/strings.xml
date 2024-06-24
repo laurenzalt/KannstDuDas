@@ -19,4 +19,17 @@
     <string name="profile_picture_description">Profile Picture</string>
     <string name="edit">Edit</string>
     <string name="email">Email</string>
+    <string name="name_edit_skill">Name</string>
+    <string name="description_edit_skill">Description</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="search_skills">Search Skills</string>
+    <string name="my_skills">My Skills</string>
+    <string name="subscribed_skills">Subscribed Skills</string>
+    <string name="create">Create</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="delete_skill">Delete Skill</string>
+    <string name="edit_skill">Edit Skill</string>
+    <string name="unsubscribe">Unsubscribe</string>
+    <string name="add_to_skills">Add to skills</string>
 </resources>

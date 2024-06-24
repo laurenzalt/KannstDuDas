@@ -23,6 +23,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.res.stringResource
+import at.fhj.kannstdudas.R
 import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
 
 /**
@@ -66,12 +68,12 @@ fun ToggleButton(showSubscribedSkills: Boolean, onToggleChanged: (Boolean) -> Un
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        Text("My Skills", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(end = 16.dp))
+        Text(text = stringResource(R.string.my_skills), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(end = 16.dp))
         Switch(
             checked = showSubscribedSkills,
             onCheckedChange = onToggleChanged
         )
-        Text("Subscribed Skills", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(start = 16.dp))
+        Text(text = stringResource(R.string.subscribed_skills), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(start = 16.dp))
     }
 }
 

@@ -22,9 +22,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import at.fhj.kannstdudas.R
 import at.fhj.kannstdudas.domain.model.Skill
 import at.fhj.kannstdudas.navigation.Screen
 import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
@@ -87,7 +89,7 @@ fun SkillManagementButtons(skill: Skill, viewModel: SkillViewModel, navControlle
                 .fillMaxWidth()
                 .padding(top = 8.dp)
         ) {
-            Text("Delete Skill")
+            Text(stringResource(R.string.delete_skill))
         }
         Button(
             onClick = {
@@ -97,7 +99,7 @@ fun SkillManagementButtons(skill: Skill, viewModel: SkillViewModel, navControlle
                 .fillMaxWidth()
                 .padding(top = 8.dp)
         ) {
-            Text("Edit Skill")
+            Text(stringResource(R.string.edit_skill))
         }
     }
 }
@@ -116,7 +118,7 @@ fun SubscriptionButton(skill: Skill, isSubscribed: Boolean, viewModel: SkillView
             .fillMaxWidth()
             .padding(top = 16.dp)
     ) {
-        Text(if (isSubscribed) "Unsubscribe" else "Add to skills")
+        Text(if (isSubscribed) stringResource(R.string.unsubscribe) else stringResource(R.string.add_to_skills))
     }
 }
 
