@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="app_name">KannstDuDas</string>
+    <string name="sign_in_title">Anmelden</string>
+    <string name="sign_in_button">Einloggen</string>
+    <string name="sign_up_link">Registrieren</string>
+    <string name="forgot_password_link">Passwort zurücksetzen</string>
+    <string name="email_hint">E-Mail</string>
+    <string name="password_hint">Passwort</string>
+    <string name="sign_up_title">Registrieren</string>
+    <string name="username_hint">Benutzername</string>
+    <string name="sign_up_button">Registrieren!</string>
+    <string name="sign_in_link">Einloggen</string>
+    <string name="confirm_password_hint">Passwort bestätigen</string>
+    <string name="forgot_password_title">Passwort vergessen</string>
+    <string name="forgot_password_button">Absenden</string>
+    <string name="profile_logout">Abmelden</string>
+    <string name="guest">Gast</string>
+    <string name="greeting">Hallo, %1$s!</string>
+    <string name="profile_picture_description">Profilbild</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="email">E-Mail</string>
+    <string name="name_edit_skill">Name</string>
+    <string name="description_edit_skill">Beschreibung</string>
+    <string name="save_changes">Änderungen speichern</string>
+    <string name="search_skills">Skill suchen</string>
+    <string name="my_skills">Meine Skills</string>
+    <string name="subscribed_skills">Abonnierte Skills</string>
+    <string name="create">Erstellen</string>
+    <string name="title">Titel</string>
+    <string name="description">Beschreibung</string>
+    <string name="delete_skill">Skill löschen</string>
+    <string name="edit_skill">Skill bearbeiten</string>
+    <string name="unsubscribe">Abmelden</string>
+    <string name="add_to_skills">Zu Skills hinzufügen</string>
+</resources>

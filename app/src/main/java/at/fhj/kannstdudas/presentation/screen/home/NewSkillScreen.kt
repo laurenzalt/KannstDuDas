@@ -20,10 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import at.fhj.kannstdudas.R
 import at.fhj.kannstdudas.domain.model.Category
 import at.fhj.kannstdudas.domain.model.Skill
 import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
@@ -51,7 +53,10 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillViewModel =
 
     Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }) { padding ->
         Column(
-            modifier = Modifier.padding(padding).padding(16.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(padding)
+                .padding(16.dp)
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             TitleInput(title) { newTitle ->
@@ -89,7 +94,7 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillViewModel =
                 },
                 modifier = Modifier.align(Alignment.End)
             ) {
-                Text("Create")
+                Text(stringResource(R.string.create))
             }
         }
     }
@@ -101,7 +106,7 @@ fun TitleInput(title: String, onTitleChange: (String) -> Unit) {
     OutlinedTextField(
         value = title,
         onValueChange = onTitleChange,
-        label = { Text("Title") },
+        label = { Text(stringResource(R.string.title)) },
         singleLine = true,
         trailingIcon = { Text("${title.length}/28", style = MaterialTheme.typography.bodySmall) },
         modifier = Modifier.fillMaxWidth()
@@ -121,7 +126,9 @@ fun CategorySelector(isExpanded: Boolean, category: Category, onCategoryChange: 
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
-            modifier = Modifier.menuAnchor().fillMaxWidth()
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = isExpanded,
@@ -143,7 +150,7 @@ fun DescriptionInput(description: String, onDescriptionChange: (String) -> Unit)
     OutlinedTextField(
         value = description,
         onValueChange = onDescriptionChange,
-        label = { Text("Description") },
+        label = { Text(stringResource(R.string.description)) },
         modifier = Modifier.fillMaxWidth(),
         maxLines = 20,
         textStyle = LocalTextStyle.current.copy(lineHeight = 20.sp)

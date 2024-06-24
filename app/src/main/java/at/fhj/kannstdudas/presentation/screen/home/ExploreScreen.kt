@@ -29,9 +29,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import at.fhj.kannstdudas.R
 import at.fhj.kannstdudas.domain.model.Skill
 import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
 
@@ -64,7 +66,7 @@ fun SearchBar(query: String, onQueryChanged: (String) -> Unit, onDone: () -> Uni
     TextField(
         value = query,
         onValueChange = onQueryChanged,
-        label = { Text("Search Skills") },
+        label = { Text(stringResource(R.string.search_skills)) },
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
