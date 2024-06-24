@@ -34,4 +34,19 @@
     <string name="edit_skill">Skill bearbeiten</string>
     <string name="unsubscribe">Abmelden</string>
     <string name="add_to_skills">Zu Skills hinzufügen</string>
+    <string name="skill_added_successfully">Skill wurde erfolgreich hinzugefügt!</string>
+    <string name="sign_in_successful">Anmeldung erfolgreich</string>
+    <string name="sign_in_unsuccessful_please_check_your_email_or_password">Anmeldung fehlgeschlagen, bitte überprüfen Sie Ihre E-Mail oder Ihr Passwort.</string>
+    <string name="sign_up_successful">Registrierung erfolgreich</string>
+    <string name="sign_up_unsuccessful_please_fill_out_all_fields_correctly">Registrierung fehlgeschlagen, bitte füllen Sie alle Felder korrekt aus.</string>
+    <string name="reset_password_e_mail_sent">Passwort zurücksetzen E-Mail gesendet</string>
+    <string name="skill_successfully_added">Skill erfolgreich hinzugefügt</string>
+    <string name="failed_to_add_skill">Fehler beim Hinzufügen des Skills</string>
+    <string name="skill_successfully_deleted">Skill erfolgreich gelöscht</string>
+    <string name="failed_to_delete_skill">Fehler beim Löschen des Skills</string>
+    <string name="error_fetching_skills">Fehler beim Abrufen der Skills: %1$s</string>
+    <string name="skill_subscribed_successfully">Skill erfolgreich abonniert</string>
+    <string name="failed_to_subscribe_to_skill">Fehler beim Abonnieren des Skills</string>
+    <string name="skill_unsubscribed_successfully">Skill erfolgreich abboniert</string>
+    <string name="failed_to_unsubscribe_from_skill">Fehler beim abbonieren des Skills</string>
 </resources>

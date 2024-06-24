@@ -2,6 +2,7 @@ package at.fhj.kannstdudas.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.fhj.kannstdudas.R
 import at.fhj.kannstdudas.data.repository.FirestoreSkillRepository
 import at.fhj.kannstdudas.data.repository.UserRepository
 import at.fhj.kannstdudas.domain.model.User
@@ -17,6 +18,7 @@ import at.fhj.kannstdudas.domain.usecase.skill.GetSubscribedSkillsUseCase
 import at.fhj.kannstdudas.domain.usecase.skill.IsSubscribedToSkillUseCase
 import at.fhj.kannstdudas.domain.usecase.skill.SaveSkillUseCase
 import at.fhj.kannstdudas.domain.usecase.skill.UnsubscribeSkillUseCase
+import at.fhj.kannstdudas.infrastructure.util.ResourceProvider
 import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -49,8 +51,9 @@ class SkillViewModel @Inject constructor(
     private val editSkillUseCase: EditSkillUseCase,
     private val addSubscribedSkillUseCase: AddSubscribedSkillUseCase,
     private val unsubscribeSkillUseCase: UnsubscribeSkillUseCase,
-    private val getSubscribedSkillsUseCase: GetSubscribedSkillsUseCase
-): ViewModel() {
+    private val getSubscribedSkillsUseCase: GetSubscribedSkillsUseCase,
+    private val resourceProvider: ResourceProvider,
+    ): ViewModel() {
     private val _skill = MutableStateFlow<Skill?>(null)
     val skill: StateFlow<Skill?> = _skill
 
@@ -97,9 +100,9 @@ class SkillViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 saveSkillUseCase(skill)
-                _userMessage.value = "Skill successfully added"
+                _userMessage.value = resourceProvider.getString(R.string.skill_successfully_added)
             } catch (e: FirebaseFirestoreException) {
-                _userMessage.value = "Failed to add skill"
+                _userMessage.value = resourceProvider.getString(R.string.failed_to_add_skill)
                 println(e)
             }
         }
@@ -122,9 +125,9 @@ class SkillViewModel @Inject constructor(
             try {
                 deleteSkillUseCase(skillId)
                 // skillRepository.deleteSkill(skillId)
-                _userMessage.value = "Skill successfully deleted"
+                _userMessage.value = resourceProvider.getString(R.string.skill_successfully_deleted)
             } catch (e: FirebaseFirestoreException) {
-                _userMessage.value = "Failed to delete skill"
+                _userMessage.value = resourceProvider.getString(R.string.failed_to_delete_skill)
                 println(e)
             }
         }
@@ -144,22 +147,19 @@ class SkillViewModel @Inject constructor(
     fun getSkillsByUser() {
         viewModelScope.launch {
             try {
-                 _user.value = userRepository.getCurrentUser()
+                _user.value = userRepository.getCurrentUser()
+                val currentUser = _user.value ?: return@launch
+                _mySkills.value = getSkillsByUserUseCase(currentUser.uid)
             } catch (e: FirebaseFirestoreException) {
-                println(e)
-                _user.value = null
-            }
-
-            if (_user.value != null) {
-                try {
-                    val currentUser = _user.value ?: return@launch
-                    _mySkills.value = getSkillsByUserUseCase(currentUser.uid)
-                } catch (e: FirebaseFirestoreException) {
-                    println("Error fetching skills: ${e.message}")
-                }
+                println(e.message?.let {
+                    resourceProvider.getString(R.string.error_fetching_skills,
+                        it
+                    )
+                })
             }
         }
     }
+
 
     fun isSubscribedToSkill(skillId: String): Boolean {
         viewModelScope.launch {
@@ -202,9 +202,11 @@ class SkillViewModel @Inject constructor(
                 _user.value = getCurrentUserUseCase()
                 val currentUser = _user.value ?: return@launch
                 addSubscribedSkillUseCase(currentUser.uid, skill)
-                _userMessage.value = "Skill subscribed successfully"
+                _userMessage.value =
+                    resourceProvider.getString(R.string.skill_subscribed_successfully)
             } catch (e: FirebaseFirestoreException) {
-                _userMessage.value = "Failed to subscribe to skill"
+                _userMessage.value =
+                    resourceProvider.getString(R.string.failed_to_subscribe_to_skill)
                 println(e)
             }
         }
@@ -216,9 +218,10 @@ class SkillViewModel @Inject constructor(
                 _user.value = getCurrentUserUseCase()
                 val currentUser = _user.value ?: return@launch
                 unsubscribeSkillUseCase(currentUser.uid, skillId)
-                _userMessage.value = "Skill unsubscribed successfully"
+                _userMessage.value =
+                    resourceProvider.getString(R.string.skill_unsubscribed_successfully)
             } catch (e: FirebaseFirestoreException) {
-                _userMessage.value = "Failed to unsubscribe from skill"
+                _userMessage.value = resourceProvider.getString(R.string.failed_to_unsubscribe_from_skill)
                 println(e)
             }
         }

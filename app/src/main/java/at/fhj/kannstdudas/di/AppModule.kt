@@ -1,17 +1,20 @@
 package at.fhj.kannstdudas.di
 
+import android.content.Context
 import at.fhj.kannstdudas.data.datasource.FirestoreUserDataSource
 import at.fhj.kannstdudas.data.datasource.FirestoreSkillDataSource
 import at.fhj.kannstdudas.data.repository.FirestoreSkillRepository
 import at.fhj.kannstdudas.data.repository.UserRepository
 import at.fhj.kannstdudas.domain.datasource.SkillDataSource
 import at.fhj.kannstdudas.domain.datasource.UserDataSource
+import at.fhj.kannstdudas.infrastructure.util.ResourceProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -63,4 +66,10 @@ object AppModule {
         firebaseAuth: FirebaseAuth,
         userDataSource: UserDataSource
     ): UserRepository = UserRepository(firebaseAuth, userDataSource)
+
+    @Provides
+    @Singleton
+    fun provideResourceProvider(@ApplicationContext context: Context): ResourceProvider {
+        return ResourceProvider(context)
+    }
 }

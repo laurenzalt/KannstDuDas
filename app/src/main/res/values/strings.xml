@@ -32,4 +32,19 @@
     <string name="edit_skill">Edit Skill</string>
     <string name="unsubscribe">Unsubscribe</string>
     <string name="add_to_skills">Add to skills</string>
+    <string name="skill_added_successfully">Skill added successfully!</string>
+    <string name="sign_in_successful">Sign in successful</string>
+    <string name="sign_in_unsuccessful_please_check_your_email_or_password">Sign in unsuccessful, please check your email or password.</string>
+    <string name="sign_up_successful">Sign up successful</string>
+    <string name="sign_up_unsuccessful_please_fill_out_all_fields_correctly">Sign up unsuccessful, please fill out all fields correctly.</string>
+    <string name="reset_password_e_mail_sent">Reset password E-Mail sent</string>
+    <string name="skill_successfully_added">Skill successfully added</string>
+    <string name="failed_to_add_skill">Failed to add skill</string>
+    <string name="skill_successfully_deleted">Skill successfully deleted</string>
+    <string name="failed_to_delete_skill">Failed to delete skill</string>
+    <string name="error_fetching_skills">Error fetching skills: %1$s</string>
+    <string name="skill_subscribed_successfully">Skill subscribed successfully</string>
+    <string name="failed_to_subscribe_to_skill">Failed to subscribe to skill</string>
+    <string name="skill_unsubscribed_successfully">Skill unsubscribed successfully</string>
+    <string name="failed_to_unsubscribe_from_skill">Failed to unsubscribe from skill</string>
 </resources>

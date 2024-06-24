@@ -18,6 +18,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -50,6 +51,7 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillViewModel =
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     val user by userViewModel.user.collectAsState()
+    val context = LocalContext.current
 
     Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }) { padding ->
         Column(
@@ -79,9 +81,10 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillViewModel =
                         if (skill != null) {
                             viewModel.saveSkill(skill)
                         }
+
                         coroutineScope.launch {
                             snackbarHostState.showSnackbar(
-                                message = "Skill added successfully!",
+                                message = context.getString(R.string.skill_added_successfully),
                                 duration = SnackbarDuration.Short
                             )
                         }

@@ -3,6 +3,7 @@ package at.fhj.kannstdudas.presentation.viewmodel
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.fhj.kannstdudas.R
 import at.fhj.kannstdudas.data.repository.UserRepository
 import at.fhj.kannstdudas.domain.model.User
 import at.fhj.kannstdudas.domain.usecase.user.CheckAuthStatusUseCase
@@ -11,6 +12,7 @@ import at.fhj.kannstdudas.domain.usecase.user.ResetPasswordUseCase
 import at.fhj.kannstdudas.domain.usecase.user.SignInUseCase
 import at.fhj.kannstdudas.domain.usecase.user.SignOutUseCase
 import at.fhj.kannstdudas.domain.usecase.user.SignUpUseCase
+import at.fhj.kannstdudas.infrastructure.util.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +32,8 @@ class AuthViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val signOutUseCase: SignOutUseCase,
     private  val checkAuthStatusUseCase: CheckAuthStatusUseCase,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
 
     private val _isSignedIn = MutableStateFlow(false)
@@ -74,11 +77,12 @@ class AuthViewModel @Inject constructor(
             try {
                 signInUseCase(user)
                 _isSignedIn.value = true
-                _errorMessage.value = "Sign in successful"
+                _errorMessage.value = resourceProvider.getString(R.string.sign_in_successful)
                 fetchCurrentUser()
             } catch (e: Exception) {
                 _isSignedIn.value = false
-                _errorMessage.value = e.message
+                _errorMessage.value =
+                    resourceProvider.getString(R.string.sign_in_unsuccessful_please_check_your_email_or_password)
             }
         }
     }
@@ -88,10 +92,11 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 signUpUseCase(user)
-                _errorMessage.value = "Sign up successful"
+                _errorMessage.value = resourceProvider.getString(R.string.sign_up_successful)
                 fetchCurrentUser()
             } catch (e: Exception) {
-                _errorMessage.value = e.message
+                _errorMessage.value =
+                    resourceProvider.getString(R.string.sign_up_unsuccessful_please_fill_out_all_fields_correctly)
             }
         }
     }
@@ -101,7 +106,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 resetPasswordUseCase(User(email = email, username = "", password = ""))
-                _errorMessage.value = "Reset password E-Mail sent"
+                _errorMessage.value = resourceProvider.getString(R.string.reset_password_e_mail_sent)
             } catch (e: Exception) {
                 _errorMessage.value = e.message
             }
