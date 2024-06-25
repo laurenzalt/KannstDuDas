@@ -57,7 +57,6 @@ fun SignInScreen(
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val isSignIn by viewModel.isSignedIn.collectAsState()
-    //TODO: Needs proper user error messages
     val errorMessage by viewModel.errorMessage.collectAsState()
 
     LaunchedEffect(isSignIn) {

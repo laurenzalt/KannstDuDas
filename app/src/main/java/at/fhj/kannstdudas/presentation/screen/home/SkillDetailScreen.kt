@@ -41,7 +41,6 @@ import kotlinx.coroutines.launch
  * Created by Laurenz Altendorfer on 13/06/2024
  */
 
-//TODO: Button logic doesn't work when you are coming from My Skills and go to the subscribed skills
 @Composable
 fun SkillDetailScreen(skillId: String, navController: NavHostController, viewModel: SkillViewModel = hiltViewModel(), userViewModel : AuthViewModel = hiltViewModel()) {
 
@@ -88,7 +87,7 @@ fun SkillManagementButtons(skill: Skill, viewModel: SkillViewModel, navControlle
             onClick = {
                 viewModel.deleteSkill(skill.id)
                 navController.navigate(Screen.Explore)
-                      },
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp)
@@ -110,22 +109,22 @@ fun SkillManagementButtons(skill: Skill, viewModel: SkillViewModel, navControlle
 
 @Composable
 fun SubscriptionButton(skill: Skill, viewModel: SkillViewModel, userViewModel: AuthViewModel) {
-    var isSubscribed = viewModel.isSubscribedToSkill(skill.id)
+    val isSubscribed by viewModel.isSubscribedToSkill.collectAsState()
     val coroutineScope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
 
-//    LaunchedEffect(skill.id) {
-//        isSubscribed = viewModel.isSubscribedToSkill(skill.id)
-//    }
+    LaunchedEffect(skill.id) {
+        viewModel.checkIfSubscribed(skill.id)
+    }
 
     Button(
         onClick = {
-            if (isSubscribed) {
-                viewModel.unsubscribeSkill(skill.id)
-            } else {
-                viewModel.addSubscribedSkill(skill)
+            coroutineScope.launch {
+                if (isSubscribed) {
+                    viewModel.unsubscribeSkill(skill.id)
+                } else {
+                    viewModel.addSubscribedSkill(skill)
+                }
             }
-            isSubscribed = !isSubscribed
         },
         modifier = Modifier
             .fillMaxWidth()
@@ -134,6 +133,7 @@ fun SubscriptionButton(skill: Skill, viewModel: SkillViewModel, userViewModel: A
         Text(if (isSubscribed) stringResource(R.string.unsubscribe) else stringResource(R.string.add_to_skills))
     }
 }
+
 
 @Composable
 fun SkillDescription(skill: Skill) {

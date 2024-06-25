@@ -199,11 +199,11 @@ class SkillViewModel @Inject constructor(
     fun addSubscribedSkill(skill: Skill) {
         viewModelScope.launch {
             try {
-                _user.value = getCurrentUserUseCase()
-                val currentUser = _user.value ?: return@launch
-                addSubscribedSkillUseCase(currentUser.uid, skill)
-                _userMessage.value =
-                    resourceProvider.getString(R.string.skill_subscribed_successfully)
+                val user = getCurrentUserUseCase()
+                if (user != null) {
+                    addSubscribedSkillUseCase(user.uid, skill)
+                    checkIfSubscribed(skill.id)
+                }
             } catch (e: FirebaseFirestoreException) {
                 _userMessage.value =
                     resourceProvider.getString(R.string.failed_to_subscribe_to_skill)
@@ -215,14 +215,13 @@ class SkillViewModel @Inject constructor(
     fun unsubscribeSkill(skillId: String) {
         viewModelScope.launch {
             try {
-                _user.value = getCurrentUserUseCase()
-                val currentUser = _user.value ?: return@launch
-                unsubscribeSkillUseCase(currentUser.uid, skillId)
-                _userMessage.value =
-                    resourceProvider.getString(R.string.skill_unsubscribed_successfully)
-            } catch (e: FirebaseFirestoreException) {
-                _userMessage.value = resourceProvider.getString(R.string.failed_to_unsubscribe_from_skill)
-                println(e)
+                val user = getCurrentUserUseCase()
+                if (user != null) {
+                    unsubscribeSkillUseCase(user.uid, skillId)
+                    checkIfSubscribed(skillId)
+                }
+            } catch (e: Exception) {
+                // Handle exception
             }
         }
     }
@@ -241,5 +240,17 @@ class SkillViewModel @Inject constructor(
 
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
+    }
+
+    fun checkIfSubscribed(skillId: String) {
+        viewModelScope.launch {
+            try {
+                val user = getCurrentUserUseCase()
+                val isSubscribed = isSubscribedToSkillUseCase(user?.uid, skillId)
+                _isSubscribedToSkill.value = isSubscribed
+            } catch (e: Exception) {
+                _isSubscribedToSkill.value = false
+            }
+        }
     }
 }
