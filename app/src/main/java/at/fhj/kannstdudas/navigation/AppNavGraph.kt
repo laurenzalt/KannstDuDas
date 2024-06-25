@@ -20,6 +20,7 @@ import at.fhj.kannstdudas.presentation.screen.home.SkillDetailScreen
 import at.fhj.kannstdudas.presentation.screen.authentication.ForgotPasswordScreen
 import at.fhj.kannstdudas.presentation.screen.authentication.SignInScreen
 import at.fhj.kannstdudas.presentation.screen.authentication.SignUpScreen
+import at.fhj.kannstdudas.presentation.screen.home.FavoriteSkillScreen
 import at.fhj.kannstdudas.presentation.shared.layout.HomeLayout
 import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 import at.fhj.kannstdudas.presentation.viewmodel.NavigationViewModel
@@ -73,6 +74,7 @@ fun NavGraphBuilder.homeNavGraph(
         composable<Screen.NewSkill> { HomeLayout(navController, navigationViewModel, authenticationViewModel) { NewSkillScreen(navController) } }
         composable<Screen.MySkills> { HomeLayout(navController, navigationViewModel, authenticationViewModel) { MySkillsScreen(navController) } }
         composable<Screen.SkillDetail> { HomeLayout(navController, navigationViewModel, authenticationViewModel) { SkillDetailScreen("", navController) } }
+        composable<Screen.FavoriteSkill> { HomeLayout(navController, navigationViewModel, authenticationViewModel) { FavoriteSkillScreen(navController) } }
 
         // with IDs
         composable("SkillDetail/{skillId}") { backStackEntry ->

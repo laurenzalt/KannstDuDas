@@ -3,30 +3,42 @@ package at.fhj.kannstdudas.presentation.screen.home
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,10 +59,10 @@ import at.fhj.kannstdudas.R
 import at.fhj.kannstdudas.domain.model.User
 import at.fhj.kannstdudas.navigation.Route
 import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
-import coil.compose.rememberAsyncImagePainter
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
+import coil.compose.AsyncImage
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 /**
  * at.fhj.kannstdudas.presentation.screen
@@ -59,11 +71,16 @@ import com.google.accompanist.permissions.rememberPermissionState
 
 @Composable
 fun ProfileScreen(
-    viewModel: AuthViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
-    val isSignIn by viewModel.isSignedIn.collectAsState()
-    val user by viewModel.user.collectAsState()
+    val isSignIn by authViewModel.isSignedIn.collectAsState()
+    val user by authViewModel.user.collectAsState()
+
+    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var picUrl by remember { mutableStateOf("") }
+    var editMode by remember { mutableStateOf(false) }
 
     LaunchedEffect(isSignIn) {
         if (!isSignIn) {
@@ -73,6 +90,18 @@ fun ProfileScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        val currentUser = FirebaseAuth.getInstance().currentUser?.uid.toString()
+        FirebaseFirestore.getInstance().collection("users")
+            .document(currentUser)
+            .get()
+            .addOnSuccessListener {
+                username = it.get("username").toString()
+                email = it.get("email").toString()
+                picUrl = it.get("profile_picture").toString()
+            }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -80,108 +109,127 @@ fun ProfileScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Greeting(user)
-        ProfilePicture(viewModel, user)
-        UserInfo(user)
-        SignOutButton(viewModel)
-    }
-}
-
-@Composable
-fun Greeting(user: User?) {
-    Text(
-        text = stringResource(id = R.string.greeting, user?.username ?: stringResource(R.string.guest)),
-        fontWeight = FontWeight.Bold,
-        fontSize = 26.sp,
-        overflow = TextOverflow.Ellipsis
-    )
-}
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun ProfilePicture(viewModel: AuthViewModel, user: User?) {
-    val permissionState = rememberPermissionState(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-    val painter = rememberAsyncImagePainter(
-        model = user?.profile_picture,
-        contentScale = ContentScale.Crop,
-        placeholder = rememberVectorPainter(Icons.Default.AccountCircle)
-    )
-
-    var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
-    var hasPermission by rememberSaveable { mutableStateOf(permissionState.status.isGranted) }
-
-    LaunchedEffect(selectedImageUri, hasPermission) {
-        if (hasPermission && selectedImageUri != null) {
-            viewModel.uploadProfilePicture(selectedImageUri!!)
-        }
-    }
-
-    val pickImageLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-        onResult = { uri: Uri? ->
-            if (uri != null) {
-                selectedImageUri = uri
-                if (permissionState.status.isGranted) {
-                    hasPermission = true
-                } else {
-                    permissionState.launchPermissionRequest()
-                }
+        ProfileImage(Uri.parse(picUrl)) {
+            updateProfilePicture(it) { newUrl ->
+                picUrl = newUrl
+                authViewModel.updateProfilePictureUrl(newUrl)
             }
         }
-    )
-
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .padding(16.dp)
-            .size(150.dp)
-    ) {
-        Image(
-            painter = painter,
-            contentDescription = stringResource(R.string.profile_picture_description),
-            modifier = Modifier
-                .fillMaxSize()
-                .aspectRatio(1f)
-                .clip(CircleShape)
-                .border(2.dp, Color.Gray, CircleShape)
+        EditableUserInfo(
+            email = email,
+            username = username,
+            editMode = editMode,
+            onEditModeChange = { editMode = it },
+            onUsernameChange = {
+                username = it
+                updateUsernameInFirebase(it)
+            }
         )
-        Button(
-            onClick = {
-                if (permissionState.status.isGranted) {
-                    pickImageLauncher.launch("image/*")
-                } else {
-                    permissionState.launchPermissionRequest()
-                }
-            },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .size(40.dp)
-                .clip(CircleShape)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = stringResource(R.string.edit)
-            )
-        }
+        SignOutButton(authViewModel)
     }
 }
 
 @Composable
-fun UserInfo(user: User?) {
-    Card(
+fun EditableUserInfo(
+    email: String,
+    username: String,
+    editMode: Boolean,
+    onEditModeChange: (Boolean) -> Unit,
+    onUsernameChange: (String) -> Unit
+) {
+    Column(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(16.dp)
             .fillMaxWidth()
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = buildAnnotatedString {
-                    append("${stringResource(R.string.email)}: ")
-                    pushStyle(SpanStyle(fontWeight = FontWeight.Normal))
-                    append(user?.email ?: "nofirestore@test.com")
-                    pop()
-                },
-                style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        OutlinedTextField(
+            value = email,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(text = stringResource(R.string.email)) },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Email,
+                    contentDescription = null
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+        )
+
+        OutlinedTextField(
+            value = username,
+            onValueChange = onUsernameChange,
+            label = { Text(text = stringResource(R.string.username)) },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = null,
+
+                )
+            },
+            trailingIcon = {
+                IconButton(onClick = { onEditModeChange(!editMode) }) {
+                    Icon(
+                        imageVector = if (editMode) Icons.Default.Check else Icons.Default.Edit,
+                        contentDescription = null
+                    )
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+
+@Composable
+fun ProfileImage(imageUrl: Uri?, onImageChangeClick: (newUri: Uri) -> Unit = {}) {
+    val color = MaterialTheme.colorScheme
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            onImageChangeClick(it)
+        }
+    }
+
+    Box(Modifier.height(140.dp)) {
+        Box(
+            modifier = Modifier
+                .size(140.dp)
+                .clip(CircleShape)
+                .border(3.dp, color.primary, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            AsyncImage(
+                model = imageUrl,
+                modifier = Modifier
+                    .size(140.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop,
+                placeholder = rememberVectorPainter(image = Icons.Default.AccountCircle),
+                error = rememberVectorPainter(image = Icons.Default.AccountCircle),
+                contentDescription = null,
+            )
+        }
+        IconButton(
+            onClick = { launcher.launch("image/*") },
+            modifier = Modifier
+                .size(35.dp)
+                .padding(2.dp)
+                .clip(CircleShape)
+                .align(Alignment.BottomEnd),
+            colors = IconButtonDefaults.iconButtonColors(color.primary),
+        ) {
+            Icon(
+                imageVector = Icons.Default.CameraAlt,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(5.dp),
+                tint = color.onPrimary
             )
         }
     }
@@ -189,14 +237,59 @@ fun UserInfo(user: User?) {
 
 @Composable
 fun SignOutButton(viewModel: AuthViewModel) {
-    Button(
+    val color = MaterialTheme.colorScheme
+
+    IconButton(
+        onClick = {
+            viewModel.logoutUser()
+        },
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        onClick = {
-            viewModel.logoutUser()
+        colors = IconButtonDefaults.iconButtonColors(color.primary),
+        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = Icons.Filled.Logout,
+                contentDescription = stringResource(id = R.string.profile_logout),
+                tint = color.onPrimary
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(id = R.string.profile_logout),
+                style = MaterialTheme.typography.labelMedium,
+                color = color.onPrimary
+            )
         }
-    ) {
-        Text(stringResource(R.string.profile_logout))
     }
+}
+
+
+private fun updateProfilePicture(uri: Uri, onSuccess: (String) -> Unit) {
+    val riversRef =
+        FirebaseStorage.getInstance().getReference("profile_pictures/${FirebaseAuth.getInstance().currentUser?.uid.toString()}")
+    val uploadTask = riversRef.putFile(uri)
+
+    uploadTask.addOnFailureListener {
+    }.addOnSuccessListener { taskSnapshot ->
+        taskSnapshot.storage.downloadUrl.addOnSuccessListener { newUri ->
+            FirebaseFirestore.getInstance().collection("users")
+                .document(FirebaseAuth.getInstance().currentUser?.uid.toString())
+                .update("profile_picture", newUri.toString())
+                .addOnSuccessListener {
+                    onSuccess(newUri.toString())
+                }
+        }
+    }
+}
+
+private fun updateUsernameInFirebase(newUsername: String) {
+    val currentUser = FirebaseAuth.getInstance().currentUser?.uid.toString()
+    FirebaseFirestore.getInstance().collection("users")
+        .document(currentUser)
+        .update("username", newUsername)
+        .addOnSuccessListener {
+        }
+        .addOnFailureListener {
+        }
 }

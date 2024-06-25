@@ -13,6 +13,8 @@ import at.fhj.kannstdudas.domain.usecase.user.SignInUseCase
 import at.fhj.kannstdudas.domain.usecase.user.SignOutUseCase
 import at.fhj.kannstdudas.domain.usecase.user.SignUpUseCase
 import at.fhj.kannstdudas.infrastructure.util.ResourceProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -146,5 +148,9 @@ class AuthViewModel @Inject constructor(
                 _errorMessage.value = e.message
             }
         }
+    }
+
+    fun updateProfilePictureUrl(newUrl: String) {
+        _user.value = _user.value?.copy(profile_picture = newUrl)
     }
 }

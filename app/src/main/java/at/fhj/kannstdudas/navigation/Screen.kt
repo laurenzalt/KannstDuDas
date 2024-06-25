@@ -19,6 +19,8 @@ sealed class Screen(val label: String) {
     @Serializable
     data object NewSkill: Screen("New Skill")
     @Serializable
+    data object FavoriteSkill: Screen("Favorite Skills")
+    @Serializable
     data object Profile: Screen("Profile")
     @Serializable
     data object SignIn: Screen("Sign in")

@@ -3,6 +3,7 @@ package at.fhj.kannstdudas.presentation.shared.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
@@ -60,6 +61,7 @@ object NavigationItemsProvider {
     val items = listOf(
         NavigationItem(Screen.Explore, Icons.Default.Search, R.string.explore),
         NavigationItem(Screen.NewSkill, Icons.Default.Add, R.string.new_skill),
-        NavigationItem(Screen.MySkills, Icons.Default.Favorite, R.string.my_skills)
+        NavigationItem(Screen.MySkills, Icons.Default.Book, R.string.my_skills),
+        NavigationItem(Screen.Profile, Icons.Default.AccountCircle, R.string.profile)
     )
 }
