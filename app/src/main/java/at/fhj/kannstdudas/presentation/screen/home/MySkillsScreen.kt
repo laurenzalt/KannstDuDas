@@ -45,8 +45,6 @@ fun MySkillsScreen(navController: NavHostController, viewModel: SkillViewModel =
         viewModel.getSkillsByUser()
     }
 
-
-
     Scaffold { padding ->
         Column(
             modifier = Modifier
@@ -57,11 +55,11 @@ fun MySkillsScreen(navController: NavHostController, viewModel: SkillViewModel =
             ToggleButton(showSubscribedSkills, onToggleChanged = { showSubscribedSkills = it })
 
             if (showSubscribedSkills) {
-                MySkillList(subscribedSkills, padding, onSkillClick = { skill ->
+                MySkillList(subscribedSkills, onSkillClick = { skill ->
                     navController.navigate("SkillDetail/${skill.id}")
                 })
             } else {
-                MySkillList(mySkills, padding, onSkillClick = { skill ->
+                MySkillList(mySkills, onSkillClick = { skill ->
                     navController.navigate("SkillDetail/${skill.id}")
                 })
             }
@@ -112,9 +110,8 @@ fun ToggleButton(showSubscribedSkills: Boolean, onToggleChanged: (Boolean) -> Un
     }
 }
 
-
 @Composable
-fun MySkillList(skills: List<Skill?>, padding: PaddingValues, onSkillClick: (Skill) -> Unit) {
+fun MySkillList(skills: List<Skill?>, onSkillClick: (Skill) -> Unit) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(6.dp),
         modifier = Modifier.padding(horizontal = 16.dp)
@@ -151,4 +148,3 @@ fun MySkillCard(skill: Skill?, onSkillClick: (Skill) -> Unit) {
         }
     }
 }
-

@@ -264,7 +264,6 @@ fun SignOutButton(viewModel: AuthViewModel) {
     }
 }
 
-
 private fun updateProfilePicture(uri: Uri, onSuccess: (String) -> Unit) {
     val riversRef =
         FirebaseStorage.getInstance().getReference("profile_pictures/${FirebaseAuth.getInstance().currentUser?.uid.toString()}")
