@@ -57,7 +57,8 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillViewModel =
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(16.dp)
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                .padding(top = 0.dp)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {

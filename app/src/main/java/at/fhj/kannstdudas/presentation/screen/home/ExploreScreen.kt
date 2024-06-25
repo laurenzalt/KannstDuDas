@@ -3,8 +3,12 @@ package at.fhj.kannstdudas.presentation.screen.home
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.LaunchedEffect
@@ -43,8 +48,12 @@ fun ExploreScreen(navController: NavHostController, viewModel: SkillViewModel = 
     val keyboardController = LocalSoftwareKeyboardController.current
     val filteredSkills = viewModel.filteredSkills.collectAsState(initial = listOf()).value
 
-    Scaffold(
-        topBar = {
+    Scaffold { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
             SearchBar(
                 query = searchQuery,
                 onQueryChanged = {
@@ -53,25 +62,28 @@ fun ExploreScreen(navController: NavHostController, viewModel: SkillViewModel = 
                 },
                 onDone = { keyboardController?.hide() }
             )
+            SkillList(
+                skills = filteredSkills,
+                padding = PaddingValues(horizontal = 16.dp),
+                onSkillClick = { skill ->
+                    navController.navigate("SkillDetail/${skill.id}")
+                }
+            )
         }
-    ) { padding ->
-        SkillList(skills = filteredSkills, padding, onSkillClick = { skill ->
-            navController.navigate("SkillDetail/${skill.id}")
-        })
     }
 }
 
 @Composable
 fun SearchBar(query: String, onQueryChanged: (String) -> Unit, onDone: () -> Unit) {
-    TextField(
+    OutlinedTextField(
         value = query,
         onValueChange = onQueryChanged,
         label = { Text(stringResource(R.string.search_skills)) },
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+            .padding(top = 0.dp),
         keyboardActions = KeyboardActions(onDone = { onDone() })
     )
 }
@@ -81,7 +93,6 @@ fun SkillList(skills: List<Skill?>, padding: PaddingValues, onSkillClick: (Skill
     LazyColumn(
         contentPadding = padding,
         verticalArrangement = Arrangement.spacedBy(6.dp),
-        modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         items(skills) { skill ->
             skill?.let { safeSkill ->
