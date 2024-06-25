@@ -49,4 +49,15 @@
     <string name="failed_to_subscribe_to_skill">Fehler beim Abonnieren des Skills</string>
     <string name="skill_unsubscribed_successfully">Skill erfolgreich abboniert</string>
     <string name="failed_to_unsubscribe_from_skill">Fehler beim abbonieren des Skills</string>
+    <string name="programming">Programmierung</string>
+    <string name="sports">Sport</string>
+    <string name="finance">Finanzen</string>
+    <string name="art">Kunst</string>
+    <string name="music">Musik</string>
+    <string name="languages">Sprachen</string>
+    <string name="health">Gesundheit</string>
+    <string name="fitness">Fitness</string>
+    <string name="other">Sonstiges</string>
+    <string name="explore">Entdecken</string>
+    <string name="new_skill">Neuer Skill</string>
 </resources>

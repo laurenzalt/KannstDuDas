@@ -24,7 +24,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import at.fhj.kannstdudas.R
+import at.fhj.kannstdudas.presentation.viewmodel.AuthViewModel
 import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
 
 /**
@@ -32,10 +34,18 @@ import at.fhj.kannstdudas.presentation.viewmodel.SkillViewModel
  * Created by Noah Dimmer on 13/06/2024
  */
 
-// TODO: Switch to SkillViewModel
 @Composable
-fun MySkillsScreen(navController: NavHostController, viewModel: SkillViewModel = hiltViewModel()) {
-    var showSubscribedSkills by remember { mutableStateOf(false) }  // Toggle state for showing subscribed skills
+fun MySkillsScreen(navController: NavHostController, viewModel: SkillViewModel = hiltViewModel(), userViewModel : AuthViewModel = hiltViewModel()) {
+    var showSubscribedSkills by remember { mutableStateOf(false) }
+    val subscribedSkills by viewModel.subscribedSkills.collectAsState()
+    val mySkills by viewModel.mySkills.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.getSubscribedSkills()
+        viewModel.getSkillsByUser()
+    }
+
+
 
     Scaffold { padding ->
         Column(
@@ -47,13 +57,13 @@ fun MySkillsScreen(navController: NavHostController, viewModel: SkillViewModel =
             ToggleButton(showSubscribedSkills, onToggleChanged = { showSubscribedSkills = it })
 
             if (showSubscribedSkills) {
-//                SkillList(skills = viewModel., padding, onSkillClick = { skill ->
-//                    navController.navigate("SkillDetail/${skill.id}")
-//                })
+                MySkillList(subscribedSkills, padding, onSkillClick = { skill ->
+                    navController.navigate("SkillDetail/${skill.id}")
+                })
             } else {
-//                SkillList(skills = viewModel.getSkillsByUser(), padding, onSkillClick = { skill ->
-//                    navController.navigate("SkillDetail/${skill.id}")
-//                })
+                MySkillList(mySkills, padding, onSkillClick = { skill ->
+                    navController.navigate("SkillDetail/${skill.id}")
+                })
             }
         }
     }
@@ -61,24 +71,50 @@ fun MySkillsScreen(navController: NavHostController, viewModel: SkillViewModel =
 
 @Composable
 fun ToggleButton(showSubscribedSkills: Boolean, onToggleChanged: (Boolean) -> Unit) {
+    val activeColor = MaterialTheme.colorScheme.primary
+    val inactiveColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        Text(text = stringResource(R.string.my_skills), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(end = 16.dp))
+        Text(
+            stringResource(R.string.my_skills),
+            style = MaterialTheme.typography.bodyLarge.copy(
+                color = if (!showSubscribedSkills) activeColor else inactiveColor,
+                fontWeight = if (!showSubscribedSkills) FontWeight.Bold else FontWeight.Normal
+            ),
+            modifier = Modifier
+                .clickable { onToggleChanged(false) }
+                .weight(1f)
+                .padding(horizontal = 16.dp)
+        )
         Switch(
             checked = showSubscribedSkills,
-            onCheckedChange = onToggleChanged
+            onCheckedChange = onToggleChanged,
+            modifier = Modifier
+                .weight(1f)
         )
-        Text(text = stringResource(R.string.subscribed_skills), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(start = 16.dp))
+        Text(
+            stringResource(R.string.subscribed_skills),
+            style = MaterialTheme.typography.bodyLarge.copy(
+                color = if (showSubscribedSkills) activeColor else inactiveColor,
+                fontWeight = if (showSubscribedSkills) FontWeight.Bold else FontWeight.Normal
+            ),
+            modifier = Modifier
+                .clickable { onToggleChanged(true) }
+                .weight(1f)
+                .padding(horizontal = 16.dp)
+        )
     }
 }
 
+
 @Composable
-fun MySkillList(skills: List<Skill>, onSkillClick: (Skill) -> Unit) {
+fun MySkillList(skills: List<Skill?>, padding: PaddingValues, onSkillClick: (Skill) -> Unit) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(6.dp),
         modifier = Modifier.padding(horizontal = 16.dp)
@@ -90,26 +126,28 @@ fun MySkillList(skills: List<Skill>, onSkillClick: (Skill) -> Unit) {
 }
 
 @Composable
-fun MySkillCard(skill: Skill, onSkillClick: (Skill) -> Unit) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = skill.color),
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onSkillClick(skill) },
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
+fun MySkillCard(skill: Skill?, onSkillClick: (Skill) -> Unit) {
+    if (skill != null) {
+        Card(
+            colors = CardDefaults.cardColors(containerColor = skill.color),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 28.dp)
+                .clickable { onSkillClick(skill) },
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
         ) {
-            Text(
-                text = skill.name,
-                style = MaterialTheme.typography.titleLarge,
-                color = Color.White,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 28.dp)
+            ) {
+                Text(
+                    text = skill.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
         }
     }
 }

@@ -16,7 +16,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import at.fhj.kannstdudas.R
 import at.fhj.kannstdudas.navigation.Screen
 import at.fhj.kannstdudas.presentation.viewmodel.NavigationViewModel
 
@@ -40,8 +42,8 @@ fun NavBar(navController: NavHostController, viewModel: NavigationViewModel) {
                     viewModel.clearProfileSelection()
                     navController.navigate(item.screen)
                 },
-                label = { Text(item.screen.label) },
-                icon = { Icon(item.icon, item.screen.label) }
+                label = { Text(stringResource(id = item.label)) },
+                icon = { Icon(item.icon, contentDescription = stringResource(id = item.label)) }
             )
         }
     }
@@ -50,13 +52,14 @@ fun NavBar(navController: NavHostController, viewModel: NavigationViewModel) {
 
 data class NavigationItem(
     val screen: Screen,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val label: Int
 )
 
 object NavigationItemsProvider {
     val items = listOf(
-        NavigationItem(Screen.Explore, Icons.Default.Search),
-        NavigationItem(Screen.NewSkill, Icons.Default.Add),
-        NavigationItem(Screen.MySkills, Icons.Default.Favorite)
+        NavigationItem(Screen.Explore, Icons.Default.Search, R.string.explore),
+        NavigationItem(Screen.NewSkill, Icons.Default.Add, R.string.new_skill),
+        NavigationItem(Screen.MySkills, Icons.Default.Favorite, R.string.my_skills)
     )
 }

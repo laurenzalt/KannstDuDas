@@ -71,7 +71,6 @@ fun NewSkillScreen(navController: NavHostController, viewModel: SkillViewModel =
                 isExpanded = newIsExpanded
             })
             DescriptionInput(description) { newDescription -> description = newDescription }
-            // CreateButton(title, description, category, viewModel, snackbarHostState, coroutineScope, focusManager, keyboardController)
 
             Button(
                 onClick = {
@@ -116,16 +115,17 @@ fun TitleInput(title: String, onTitleChange: (String) -> Unit) {
     )
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategorySelector(isExpanded: Boolean, category: Category, onCategoryChange: (Category, Boolean) -> Unit, setIsExpanded: (Boolean) -> Unit) {
     ExposedDropdownMenuBox(
         expanded = isExpanded,
-        onExpandedChange = setIsExpanded,  // Use the passed setter function
+        onExpandedChange = setIsExpanded,
         modifier = Modifier.fillMaxWidth()
     ) {
         TextField(
-            value = category.name,
+            value = stringResource(id = category.label),
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
@@ -140,14 +140,13 @@ fun CategorySelector(isExpanded: Boolean, category: Category, onCategoryChange: 
         ) {
             Category.values().forEach { categoryItem ->
                 DropdownMenuItem(
-                    text = { Text(text = categoryItem.name) },
+                    text = { Text(text = stringResource(id = categoryItem.label)) },
                     onClick = { onCategoryChange(categoryItem, false) }
                 )
             }
         }
     }
 }
-
 @Composable
 fun DescriptionInput(description: String, onDescriptionChange: (String) -> Unit) {
     OutlinedTextField(
