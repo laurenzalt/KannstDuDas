@@ -7,8 +7,11 @@ import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,6 +19,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
@@ -34,7 +38,9 @@ fun NavBar(navController: NavHostController, viewModel: NavigationViewModel) {
     val profileSelected = viewModel.profileSelected.value
     val items = NavigationItemsProvider.items
 
-    NavigationBar {
+    NavigationBar(
+
+    ) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedItem == index && !profileSelected,
@@ -44,7 +50,7 @@ fun NavBar(navController: NavHostController, viewModel: NavigationViewModel) {
                     navController.navigate(item.screen)
                 },
                 label = { Text(stringResource(id = item.label)) },
-                icon = { Icon(item.icon, contentDescription = stringResource(id = item.label)) }
+                icon = { Icon(item.icon, contentDescription = stringResource(id = item.label)) },
             )
         }
     }
@@ -62,6 +68,5 @@ object NavigationItemsProvider {
         NavigationItem(Screen.Explore, Icons.Default.Search, R.string.explore),
         NavigationItem(Screen.NewSkill, Icons.Default.Add, R.string.new_skill),
         NavigationItem(Screen.MySkills, Icons.Default.Book, R.string.my_skills),
-        NavigationItem(Screen.Profile, Icons.Default.AccountCircle, R.string.profile)
     )
 }

@@ -30,6 +30,4 @@ sealed class Screen(val label: String) {
     data object  ForgotPassword: Screen("Forgot Password")
     @Serializable
     data object SkillDetail: Screen("Skill Detail")
-    @Serializable
-    data object EditSkill: Screen("Edit Skill")
 }

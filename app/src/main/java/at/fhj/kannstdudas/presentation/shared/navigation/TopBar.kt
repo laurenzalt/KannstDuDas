@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,6 +33,7 @@ import at.fhj.kannstdudas.presentation.viewmodel.NavigationViewModel
 @Composable
 fun TopBar(navController: NavHostController, navigationViewModel: NavigationViewModel, authViewModel: AuthViewModel) {
     val logoPainter: Painter = painterResource(id = R.drawable.logo)
+    val selectProfile = navigationViewModel.profileSelected.value
 
     TopAppBar(
         title = {
@@ -43,16 +45,24 @@ fun TopBar(navController: NavHostController, navigationViewModel: NavigationView
             )
         },
         actions = {
-            IconButton(
-                onClick = {
-                    navigationViewModel.selectProfile()
-                    navController.navigate(Screen.FavoriteSkill)
+            if (!selectProfile) {
+                IconButton(
+                    onClick = {
+                        navigationViewModel.selectProfile()
+                        navController.navigate(Screen.FavoriteSkill)
+                    }
+                ) {
+                    IconButton(
+                        onClick = {
+                            navController.navigate(Screen.Profile)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.AccountCircle,
+                            contentDescription = R.string.profile.toString(),
+                        )
+                    }
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Favorite,
-                    contentDescription = "Favorite Skills"
-                )
             }
         },
         modifier = Modifier
